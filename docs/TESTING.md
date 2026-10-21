@@ -45,3 +45,16 @@ Report only `snmp_oid`, Item key, expected/actual numeric types and error text (
 ## What CI does not establish
 
 CI does not speak to Securepoint devices, does not test Zabbix's importer, and does not prove stable discovery indexing or trigger behavior. The acceptance checklist above must be completed before a release is called production-ready.
+
+## Local diagnostic helper (privacy preserving)
+
+From an authorized SNMPv3 monitoring machine, save a **private** numeric-OID walk. Keep it **out of GitHub**, because SNMP payloads may reveal addresses, VPN keys and users:
+
+```bash
+snmpwalk -On -v3 -l authNoPriv -u '<user>' -a SHA -A '<password>' '<utm-ip>' 1.3.6.1.4.1.28553 > /tmp/securepoint-private.snmp
+python tools/analyze_snmpwalk.py /tmp/securepoint-private.snmp --json
+```
+
+For deployments using `authPriv`, adapt your flags. Be aware shell command lines and histories can expose credentials. Prefer an SNMP config file with restrictive permissions where possible. Script output contains only **counts** of rows and missing fields, not their values or indices; review before sharing anyway.
+
+This checks OID coverage, **not** whether the returned status value means healthy, whether the manufacturer implements it correctly, or whether Zabbix imported the template.
