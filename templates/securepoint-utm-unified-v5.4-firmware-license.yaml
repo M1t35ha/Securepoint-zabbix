@@ -1170,7 +1170,7 @@ zabbix_export:
       description: Calendar days until urgent license renewal.
     - macro: '{$SP.LICENSE.ZERO.IS.EXPIRED}'
       value: '0'
-      description: Opt-in: treat zero remaining days as expired only after license semantics are verified.
+      description: 'Opt-in: treat zero remaining days as expired only after license semantics are verified.'
     - macro: '{$SP.DASHBOARD.IF.MATCHES}'
       value: '^(LAN.*|WAN.*|A[0-9].*|eth[0-9].*|wg[0-9].*|tun[0-9].*|bond.*|br.*)$'
       description: Narrow IF-MIB traffic to typical active interface names; override at host if needed.
