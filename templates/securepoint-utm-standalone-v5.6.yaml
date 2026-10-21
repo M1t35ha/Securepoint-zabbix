@@ -1,0 +1,3252 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+  - uuid: 784576545c19437eac38b7203b48acb6
+    name: Templates/Network devices
+  templates:
+  - uuid: c41e202d2eee4c21a623792115647185
+    template: Securepoint UTM Standalone v5.6 by SNMP
+    name: Securepoint UTM Standalone v5.6 by SNMP
+    description: 'Experimental unified manufacturer-MIB SNMPv3 monitoring with selected standard network/system checks and graphs. Origin: Securepoint 2025-05-27 MIB + legacy template
+      observations. NO hrStorage/hrDevice scans or zero-divisor formulas. Optional features stay disabled. No SNMP credentials, sensitive VPN endpoints or user-session inventory. Offline
+      validated only; live UTM/Zabbix testing pending. Standalone v5.6: no inherited generic SNMP parent; all IF-MIB monitoring provided locally.'
+    vendor:
+      name: Northnetone (local integration, vendor MIB definitions)
+      version: 8.0-5.6
+    groups:
+    - name: Templates/Network devices
+    tags:
+    - tag: class
+      value: network
+    - tag: target
+      value: securepoint-utm
+    - tag: source
+      value: securepoint-official-mib
+    items:
+    - uuid: 7112a5ae8b384606a204be4e4ed8f57e
+      name: 'UTM: Product name'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.1.1]
+      key: sp.mib.product.name
+      delay: 1h
+      value_type: CHAR
+      trends: '0'
+      description: comProdName, SECUREPOINT-MIB
+      tags:
+      - tag: component
+        value: inventory
+    - uuid: 82f92dd3336f4b07a5bb1baf4e7aa653
+      name: 'UTM: Current firmware version'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.1.2.7]
+      key: sp.mib.firmware.current
+      delay: 1h
+      value_type: CHAR
+      trends: '0'
+      description: comVerCur from official SECUREPOINT-MIB; previous template omitted scalar .0 suffix.
+      tags:
+      - tag: component
+        value: firmware
+    - uuid: 44f781b94df141f1ad7130f99ca35f01
+      name: 'UTM: New firmware version reported'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.1.2.8]
+      key: sp.mib.firmware.new
+      delay: 2h
+      value_type: CHAR
+      trends: '0'
+      description: 'comVerNew: vendor-reported new version, not necessarily currently installed.'
+      tags:
+      - tag: component
+        value: firmware
+      triggers:
+      - uuid: fcd7e68758c548a7a845737f27edc017
+        expression: '{$SP.FIRMWARE.ALERT}=1 and nodata(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.firmware.current,1d)=0 and nodata(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.firmware.new,1d)=0 and find(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.firmware.current,,"regexp","[0-9]+[.][0-9]+")=1 and find(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.firmware.new,,"regexp","[0-9]+[.][0-9]+")=1 and last(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.firmware.current)<>last(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.firmware.new)'
+        name: 'UTM: firmware update reported by manufacturer'
+        priority: WARNING
+        description: 'Manufacturer-reported new firmware differs from installed; verify that an update is appropriate in the UTM UI. A string difference does not imply version precedence.'
+        tags:
+        - tag: scope
+          value: maintenance
+        - tag: component
+          value: firmware
+
+    - uuid: 4cb4bae19f424fd9a867e889b2ec6899
+      name: 'UTM: License type'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.1.3.3]
+      key: sp.mib.license.type
+      delay: 6h
+      value_type: CHAR
+      trends: '0'
+      description: comLicType
+      tags:
+      - tag: component
+        value: license
+    - uuid: 7ea044aa02b047baa4e277e614d10a76
+      name: 'UTM: Licensed maximum users'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.1.3.4]
+      key: sp.mib.license.users.max
+      delay: 6h
+      description: comLicUsersMax
+      tags:
+      - tag: component
+        value: license
+    - uuid: 5896d1c29fc646d6a99ca28e00645c72
+      name: 'UTM: License days remaining'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.1.3.5]
+      key: sp.mib.license.days
+      delay: 6h
+      units: d
+      description: comLicDaysLeft; alert is OPT-IN because licensing models can differ.
+      tags:
+      - tag: component
+        value: license
+      triggers:
+      - uuid: 70cf7448da5742dca2a49a48c4278b1c
+        expression: '{$SP.LICENSE.ALERT}=1 and nodata(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.license.days,1d)=0 and last(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.license.days)<={$SP.LICENSE.WARN.DAYS} and last(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.license.days)>{$SP.LICENSE.CRIT.DAYS}'
+        name: 'UTM: license expires within {$SP.LICENSE.WARN.DAYS} days'
+        priority: WARNING
+        description: 'Upcoming renewal: remaining days above critical and at or below warning threshold. Validate per license type.'
+        tags:
+        - tag: scope
+          value: maintenance
+        - tag: component
+          value: license
+      - uuid: 355a48198cff4a6dab8e3d4d9767bd91
+        expression: '{$SP.LICENSE.ALERT}=1 and nodata(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.license.days,1d)=0 and last(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.license.days)>0 and last(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.license.days)<={$SP.LICENSE.CRIT.DAYS}'
+        name: 'UTM: license expires within {$SP.LICENSE.CRIT.DAYS} days'
+        priority: HIGH
+        description: 'Urgent renewal: remaining days are positive and at or below critical threshold. Alert action configuration is separate.'
+        tags:
+        - tag: scope
+          value: maintenance
+        - tag: component
+          value: license
+      - uuid: 0b8b351efa304c5aa5251bce986ef12a
+        expression: '{$SP.LICENSE.ALERT}=1 and nodata(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.license.days,1d)=0 and {$SP.LICENSE.ZERO.IS.EXPIRED}=1 and last(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.license.days)=0'
+        name: 'UTM: license reports zero days remaining'
+        priority: HIGH
+        description: 'Optional: activate only where zero days unambiguously means expired; some license models may use zero differently.'
+        tags:
+        - tag: scope
+          value: maintenance
+        - tag: component
+          value: license
+
+    - uuid: 6515b1ffa27f41dfa81866dba503b52b
+      name: 'UTM: Connection tracking table maximum'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.2.1.10.1]
+      key: sp.mib.conntrack.maximum
+      delay: 3m
+      description: Linux nf_conntrack_max as exposed by manufacturer MIB.
+      tags:
+      - tag: component
+        value: conntrack
+    - uuid: 7519f5f23be54a8ea4b7fc1ef5ed200a
+      name: 'UTM: Connection tracking table current'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.2.1.10.2]
+      key: sp.mib.conntrack.current
+      delay: 3m
+      description: Linux nf_conntrack_count as exposed by manufacturer MIB.
+      tags:
+      - tag: component
+        value: conntrack
+      triggers:
+      - uuid: f7201e2268ef4d62a02ed9c6c9d58b86
+        expression: '{$SP.CONNTRACK.ALERT}=1 and last(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.conntrack.maximum)>0 and min(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.conntrack.current,10m)>0.85*last(/Securepoint
+          UTM Unified v5 by SNMP/sp.mib.conntrack.maximum)'
+        name: 'UTM: conntrack table over 85%'
+        priority: WARNING
+        description: No division by zero; alert opt-in.
+        tags:
+        - tag: scope
+          value: capacity
+    - uuid: db948c07e1c240dfa04677f3f546b40b
+      name: 'UTM: HA cluster enabled'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.2.1.12.1]
+      key: sp.mib.ha.enabled
+      delay: 10m
+      description: Official clusterStatusEnabled. Scalars use .0, unlike the previous raw diagnostics items.
+      tags:
+      - tag: component
+        value: ha
+      valuemap:
+        name: Securepoint cluster enabled (MIB)
+    - uuid: 17cd8c03c1e047afab637b37be48409b
+      name: 'UTM: HA role / priority (optional)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.2.1.12.2]
+      key: sp.mib.ha.role
+      delay: 10m
+      value_type: CHAR
+      trends: '0'
+      description: clusterStatusPriority; enable only when HA is configured and OID exists.
+      status: DISABLED
+      tags:
+      - tag: component
+        value: ha
+    - uuid: 04174ca530f446e5adb6502d7a65fe25
+      name: 'UTM: HA cluster state (optional)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.2.1.12.3]
+      key: sp.mib.ha.state
+      delay: 10m
+      value_type: CHAR
+      trends: '0'
+      status: DISABLED
+      tags:
+      - tag: component
+        value: ha
+    - uuid: 58e7cf2159e94075a233e271b5a2c6ed
+      name: 'UTM: HA sync state (optional)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.2.1.12.4]
+      key: sp.mib.ha.sync
+      delay: 10m
+      value_type: CHAR
+      trends: '0'
+      status: DISABLED
+      tags:
+      - tag: component
+        value: ha
+    - uuid: 62c521ce3d454462a3218f8af0fa9706
+      name: 'UTM: HA maintenance/production mode (optional)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.28553.2.1.12.5]
+      key: sp.mib.ha.maintenance
+      delay: 10m
+      value_type: CHAR
+      trends: '0'
+      status: DISABLED
+      tags:
+      - tag: component
+        value: ha
+    - uuid: fb8daad6b26340daa9b7df8ac1db675e
+      name: 'UTM: Linux 1 minute load average (optional)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.2021.10.1.3.1]
+      key: sp.mib.linux.load1
+      delay: 3m
+      value_type: FLOAT
+      description: Standard UCD-SNMP-MIB, not manufacturer-specific. Disable if absent.
+      status: DISABLED
+      tags:
+      - tag: component
+        value: cpu
+    - uuid: 24c0c35ab28347aeaf756c72afad1e16
+      name: 'UTM: Linux 5 minute load average (optional)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.2021.10.1.3.2]
+      key: sp.mib.linux.load5
+      delay: 3m
+      value_type: FLOAT
+      status: DISABLED
+      tags:
+      - tag: component
+        value: cpu
+    - uuid: 5cd5bc72e2c54e0eaed87b7a92192aee
+      name: 'UTM: Linux 15 minute load average (optional)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.2021.10.1.3.3]
+      key: sp.mib.linux.load15
+      delay: 3m
+      value_type: FLOAT
+      status: DISABLED
+      tags:
+      - tag: component
+        value: cpu
+    - uuid: dd687e45f87843a1aab3413dee06d6f1
+      name: 'System: physical RAM declared by OS'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.25.2.2.0]
+      key: sp.hr.ram.total_kib
+      delay: 5m
+      history: 30d
+      units: KiB
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      tags:
+      - tag: component
+        value: hr
+    - uuid: 77b30388f7e24404aeb1e8dc3d416a80
+      name: 'System: number of processes'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.25.1.6.0]
+      key: sp.hr.proc.count
+      delay: 5m
+      history: 30d
+      units: processes
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      tags:
+      - tag: component
+        value: hr
+    - uuid: adff8578bdef4a7cade1223027edda24
+      name: 'System: active logged-in users'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.25.1.5.0]
+      key: sp.hr.user.count
+      delay: 5m
+      history: 30d
+      units: users
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      tags:
+      - tag: component
+        value: hr
+    - uuid: df3e155bcf2140c3a4c1598f657a0037
+      name: 'TCP: Current established or close-wait TCP connections'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.9.0]
+      key: sp.std.tcp.established
+      delay: 5m
+      history: 30d
+      units: conn
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      tags:
+      - tag: component
+        value: std
+    - uuid: 51d297c0ca8f4a18a864d39467271cb4
+      name: 'TCP: TCP active opens total'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.5.0]
+      key: sp.std.tcp.active_opens
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 8270a0fdc3c64521a100df65fc02ef61
+      name: 'TCP: TCP passive opens total'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.6.0]
+      key: sp.std.tcp.passive_opens
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: b052746b12ce4667a85daa4bac07a897
+      name: 'TCP: TCP attempts failed total'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.7.0]
+      key: sp.std.tcp.failed
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 4f16d19396f44223ae4bc91b28018863
+      name: 'TCP: TCP established resets total'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.8.0]
+      key: sp.std.tcp.resets
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 9498420cfd0b4c30a011fed0e2150ac4
+      name: 'TCP: TCP segments received total'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.10.0]
+      key: sp.std.tcp.in_segments
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 8899575bc7814b1ba6cbd303b742a7cb
+      name: 'TCP: TCP segments sent total'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.11.0]
+      key: sp.std.tcp.out_segments
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 16adb6ad53b541cdaf0e29e17e449899
+      name: 'TCP: TCP retransmitted segments total'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.12.0]
+      key: sp.std.tcp.retransmits
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 349684fea7e844aaab14e08a992eb05e
+      name: 'TCP: TCP input error segments'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.14.0]
+      key: sp.std.tcp.in_errors
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 960c4a4c2e474c04a7e1a7d43f2524bc
+      name: 'UDP: UDP datagrams delivered'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.7.1.0]
+      key: sp.std.udp.in_datagrams
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 1e8e6061d5d34255a1f1813d9441e389
+      name: 'UDP: UDP datagrams sent'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.7.4.0]
+      key: sp.std.udp.out_datagrams
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: f3de44cefbf04366a66072460d078806
+      name: 'UDP: UDP input errors'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.7.3.0]
+      key: sp.std.udp.in_errors
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 7ba372a2a8fb4132acad35bedca8f336
+      name: 'UDP: UDP no local port'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.7.2.0]
+      key: sp.std.udp.no_ports
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 2ad629ed89e043dda151bdf539c53f3d
+      name: 'IP: IP inbound discards'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.4.8.0]
+      key: sp.std.ip.in_discards
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: c5cea8d6d5c74de6a35f66f2ada17c2a
+      name: 'IP: IP output discards'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.4.11.0]
+      key: sp.std.ip.out_discards
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 749d77c2f0b54982aa7011defe8a5af6
+      name: 'IP: IP output no route'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.4.12.0]
+      key: sp.std.ip.out_no_route
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: ccd18de3039847dfa964f0d725a7c793
+      name: 'ICMP: ICMP input errors'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.5.2.0]
+      key: sp.std.icmp.in_errors
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 2b9cf6f8790c4460af7dbb48c3b24248
+      name: 'ICMP: ICMP output errors'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.5.15.0]
+      key: sp.std.icmp.out_errors
+      delay: 5m
+      history: 30d
+      value_type: FLOAT
+      units: ops/s
+      description: Standard SNMP MIB-II / HOST-RESOURCES-MIB observation (not Securepoint-vendor-specific); available on previous Zabbix instance, live validation still required.
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: std
+    - uuid: 60c732d29b5145e6a059443ed3c9e952
+      name: 'Dashboard: CPU idle from UCD-SNMP (%)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.2021.11.11.0]
+      key: sp.dashboard.cpu.idle_pct
+      delay: 5m
+      units: '%'
+      description: UCD-SNMP ssCpuIdle.0; optional capability depending on firmware.
+      tags:
+      - tag: component
+        value: dashboard
+    - uuid: e755277a1233464ea26d2a9a41618c6e
+      name: 'Dashboard: CPU utilisation (%)'
+      type: CALCULATED
+      key: sp.dashboard.cpu.used_pct
+      delay: 5m
+      value_type: FLOAT
+      params: 100-last(//sp.dashboard.cpu.idle_pct)
+      units: '%'
+      description: Optional dashboard-only derived metric. Requires both underlying UCD SNMP scalar items to be supported. Not a Securepoint vendor OID.
+      tags:
+      - tag: component
+        value: dashboard
+    - uuid: fd8c8a2bddf3448fadc156c7978be5d3
+      name: 'Dashboard: total RAM from UCD-SNMP (KiB)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.2021.4.5.0]
+      key: sp.dashboard.mem.total_kib
+      delay: 5m
+      units: KiB
+      description: UCD-SNMP memTotalReal.0; may be unsupported by firmware.
+      tags:
+      - tag: component
+        value: dashboard
+    - uuid: b12934fa839b429aa98ada7ab0558cba
+      name: 'Dashboard: free RAM from UCD-SNMP (KiB)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.4.1.2021.4.6.0]
+      key: sp.dashboard.mem.free_kib
+      delay: 5m
+      units: KiB
+      description: UCD-SNMP memAvailReal.0; cache counts as used in displayed occupancy.
+      tags:
+      - tag: component
+        value: dashboard
+    - uuid: f9170851dfba4451a0d0bce9e1f30d49
+      name: 'Dashboard: physical RAM occupied, including cache (%)'
+      type: CALCULATED
+      key: sp.dashboard.mem.used_pct
+      delay: 5m
+      value_type: FLOAT
+      params: 100*(last(//sp.dashboard.mem.total_kib)-last(//sp.dashboard.mem.free_kib))/(last(//sp.dashboard.mem.total_kib)+1)
+      units: '%'
+      description: Optional dashboard-only derived metric. Requires both underlying UCD SNMP scalar items to be supported. Not a Securepoint vendor OID.
+      tags:
+      - tag: component
+        value: dashboard
+    - uuid: 95305757adde4ecba92adec7f88643cb
+      name: 'Dashboard: host uptime (system HR)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.25.1.1.0]
+      key: sp.dashboard.uptime
+      delay: 5m
+      units: uptime
+      description: hrSystemUptime TimeTicks; multiplied by 0.01 to seconds, may reset independently from interface uptime.
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.01'
+      tags:
+      - tag: component
+        value: dashboard
+      triggers:
+      - uuid: e92e5c0cb0364ac4ab8663f450bb7e9c
+        expression: '{$SP.SNMP.NODATA.ALERT}=1 and nodata(/Securepoint UTM Standalone v5.6 by SNMP/sp.dashboard.uptime,15m)=1'
+        name: 'Securepoint: no SNMP uptime data for 15 minutes'
+        priority: HIGH
+        description: 'SNMP monitoring may be unavailable. Check firewall access, routing, SNMPv3 and device status.'
+        tags:
+        - tag: scope
+          value: availability
+    - uuid: ba26e216af7d4f4ea3f8f542154ded62
+      name: 'Dashboard: firewall hostname'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.1.5.0]
+      key: sp.dashboard.system.name
+      delay: 1h
+      value_type: CHAR
+      trends: '0'
+      description: Standard MIB-II scalar; safe system identity fallback when optional vendor firmware OID is missing.
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: dashboard
+    - uuid: 783c6b0194084e05a3dd87214b0df795
+      name: 'Dashboard: firewall system description'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.1.1.0]
+      key: sp.dashboard.system.description
+      delay: 1h
+      value_type: CHAR
+      trends: '0'
+      description: Standard MIB-II scalar; safe system identity fallback when optional vendor firmware OID is missing.
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: dashboard
+    - uuid: bd226db0781e4714a502993448199ef8
+      name: 'System: SNMP object identifier'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.1.2.0]
+      key: sp.core.system.objectid
+      delay: 1h
+      value_type: CHAR
+      trends: '0'
+      description: 'sysObjectID.0 (standard SNMP system identity); no parent template required.'
+      tags:
+      - tag: component
+        value: system
+    - uuid: 065f57114eeb4733ad3100fde1f35a83
+      name: 'System: SNMP agent uptime'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.1.3.0]
+      key: sp.core.snmp.uptime
+      delay: 5m
+      units: uptime
+      description: 'sysUpTime.0: SNMP agent time ticks. OS uptime is sp.dashboard.uptime.'
+      tags:
+      - tag: component
+        value: system
+    discovery_rules:
+    - uuid: 27fb56b9a8c948e9aeab7719dfc07ec1
+      name: 'UTM MIB: system services'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.1.1.1.2]
+      key: sp.mib.service.discovery
+      delay: 1h
+      description: appStatusTable, auto-discovers service names and known states.
+      item_prototypes:
+      - uuid: 54ab3ac9eb3b4895a90a3bb5b73f0b91
+        name: 'Service {#LABEL}: state'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.1.1.1.3.{#SNMPINDEX}]
+        key: sp.mib.service.status[{#SNMPINDEX}]
+        delay: 5m
+        description: appStatus from official MIB.
+        tags:
+        - tag: component
+          value: service
+        - tag: item
+          value: '{#LABEL}'
+        valuemap:
+          name: Securepoint application (MIB)
+        trigger_prototypes:
+        - uuid: 9f605ec4bce7405ca5b8add4cac71b04
+          expression: '{$SP.SERVICE.ALERT:"{#LABEL}"}=1 and min(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.service.status[{#SNMPINDEX}],10m)=2'
+          name: 'UTM: required service {#LABEL} is DOWN'
+          priority: WARNING
+          description: Opt in per service; status 2=Down, intentional disabled services should not be alerted.
+          tags:
+          - tag: scope
+            value: availability
+      - uuid: 4fcfaa1dbf6e46e1a9ba7cfdc5c0d341
+        name: 'Service {#LABEL}: raw flags'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.1.1.1.4.{#SNMPINDEX}]
+        key: sp.mib.service.flags[{#SNMPINDEX}]
+        delay: 15m
+        description: appFlags Unsigned32. Meaning of individual flags is not documented; no decoding.
+        tags:
+        - tag: component
+          value: service
+        - tag: item
+          value: '{#LABEL}'
+    - uuid: c07ac1cb5e004c3fa6f778379f25bc63
+      name: 'UTM MIB: IPsec tunnels'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.2.1.1.2]
+      key: sp.mib.ipsec.discovery
+      delay: 1h
+      description: ipsecStatusTable; status 0/1/2 mapped per manufacturer MIB.
+      item_prototypes:
+      - uuid: cc407224bfb34f80a541e3a4457411f8
+        name: 'IPsec {#LABEL}: tunnel status'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.2.1.1.3.{#SNMPINDEX}]
+        key: sp.mib.ipsec.status[{#SNMPINDEX}]
+        delay: 3m
+        tags:
+        - tag: component
+          value: ipsec
+        - tag: item
+          value: '{#LABEL}'
+        valuemap:
+          name: Securepoint IPsec (MIB)
+        trigger_prototypes:
+        - uuid: 5348f97a4c304e2aa5336ceec95287ee
+          expression: '{$SP.IPSEC.ALERT:"{#LABEL}"}=1 and min(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.ipsec.status[{#SNMPINDEX}],10m)=2'
+          name: 'UTM: required IPsec {#LABEL} is DOWN'
+          priority: WARNING
+          description: Opt in per IPsec profile; on-demand profiles may correctly be down.
+          tags:
+          - tag: scope
+            value: availability
+      - uuid: 79c58eb3dad942fba9acc707c2a92d7f
+        name: 'IPsec {#LABEL}: configured subnet count'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.2.1.1.4.{#SNMPINDEX}]
+        key: sp.mib.ipsec.subnets[{#SNMPINDEX}]
+        delay: 15m
+        tags:
+        - tag: component
+          value: ipsec
+        - tag: item
+          value: '{#LABEL}'
+    - uuid: 66e396ff06554fabac775f133098965f
+      name: 'UTM MIB: OpenVPN profiles'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.3.1.1.2]
+      key: sp.mib.openvpn.discovery
+      delay: 1h
+      description: openvpnStatusTable. Connection counts available; per-user session inventory not collected.
+      item_prototypes:
+      - uuid: ee7a0c3e17344fe6ad53155664b389f6
+        name: 'OpenVPN {#LABEL}: status'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.3.1.1.3.{#SNMPINDEX}]
+        key: sp.mib.openvpn.status[{#SNMPINDEX}]
+        delay: 5m
+        tags:
+        - tag: component
+          value: openvpn
+        - tag: item
+          value: '{#LABEL}'
+        valuemap:
+          name: Securepoint OpenVPN (MIB)
+      - uuid: 604eb284acea4920a2d00ad0c7142784
+        name: 'OpenVPN {#LABEL}: connected clients'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.3.1.1.4.{#SNMPINDEX}]
+        key: sp.mib.openvpn.clients[{#SNMPINDEX}]
+        delay: 5m
+        tags:
+        - tag: component
+          value: openvpn
+        - tag: item
+          value: '{#LABEL}'
+      graph_prototypes:
+      - uuid: d81bec0f3b44410ba5ff470301fb843f
+        name: 'OpenVPN {#LABEL}: active client count'
+        graph_items:
+        - sortorder: '0'
+          color: 1A7D33
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.mib.openvpn.clients[{#SNMPINDEX}]
+    - uuid: 17a3f17107cc4c01a254428d4c6387cd
+      name: 'UTM MIB: antivirus engines'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.5.1.1.2]
+      key: sp.mib.av.discovery
+      delay: 1h
+      description: Manufacturer MIB table discovery; only creates items for returned rows.
+      item_prototypes:
+      - uuid: a68055de919849c2a528a3eece756d7a
+        name: 'Antivirus {#LABEL}: last pattern update'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.5.1.1.3.{#SNMPINDEX}]
+        key: sp.mib.av.lastupdate[{#SNMPINDEX}]
+        delay: 30m
+        value_type: CHAR
+        trends: '0'
+        tags:
+        - tag: component
+          value: av
+        - tag: item
+          value: '{#LABEL}'
+      - uuid: e0b703dab1b1436aa574815aeba6506a
+        name: 'Antivirus {#LABEL}: last updater run'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.5.1.1.4.{#SNMPINDEX}]
+        key: sp.mib.av.lastrun[{#SNMPINDEX}]
+        delay: 30m
+        value_type: CHAR
+        trends: '0'
+        tags:
+        - tag: component
+          value: av
+        - tag: item
+          value: '{#LABEL}'
+      - uuid: 4e6691d8246c4020a113c6e834e8c1f8
+        name: 'Antivirus {#LABEL}: pattern update state'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.5.1.1.5.{#SNMPINDEX}]
+        key: sp.mib.av.state[{#SNMPINDEX}]
+        delay: 10m
+        tags:
+        - tag: component
+          value: av
+        - tag: item
+          value: '{#LABEL}'
+        valuemap:
+          name: Securepoint antivirus update (MIB)
+        trigger_prototypes:
+        - uuid: d0c7716e62f545d6ad8f7fdee82177fe
+          expression: '{$SP.AV.ALERT:"{#LABEL}"}=1 and min(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.av.state[{#SNMPINDEX}],20m)=2'
+          name: 'UTM: antivirus {#LABEL} pattern update FAILED'
+          priority: WARNING
+          description: Opt in per active AV engine.
+          tags:
+          - tag: scope
+            value: availability
+    - uuid: 494809a5c5b2474dafcd98716830c1d1
+      name: 'UTM MIB: WireGuard interfaces'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.11.1.1.2]
+      key: sp.mib.wg.if.discovery
+      delay: 1h
+      description: Manufacturer MIB table discovery; only creates items for returned rows.
+      item_prototypes:
+      - uuid: e1b12d4bcde94453ac96779b6e32204b
+        name: 'WireGuard {#LABEL}: configured tunnel name'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.11.1.1.3.{#SNMPINDEX}]
+        key: sp.mib.wg.interface.tunnelname[{#SNMPINDEX}]
+        delay: 30m
+        value_type: CHAR
+        trends: '0'
+        tags:
+        - tag: component
+          value: wireguard
+        - tag: item
+          value: '{#LABEL}'
+      - uuid: da847b142cb94ae0ac4adfc4414855c0
+        name: 'WireGuard {#LABEL}: status'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.11.1.1.4.{#SNMPINDEX}]
+        key: sp.mib.wg.interface.status[{#SNMPINDEX}]
+        delay: 5m
+        tags:
+        - tag: component
+          value: wireguard
+        - tag: item
+          value: '{#LABEL}'
+        valuemap:
+          name: Securepoint WireGuard (MIB)
+        trigger_prototypes:
+        - uuid: bd56665039234680ade7e0d464907d0c
+          expression: '{$SP.WG.ALERT:"{#LABEL}"}=1 and min(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.wg.interface.status[{#SNMPINDEX}],10m)=0'
+          name: 'UTM: required WireGuard tunnel {#LABEL} disconnected'
+          priority: WARNING
+          description: Opt in only for tunnels expected to remain connected.
+          tags:
+          - tag: scope
+            value: availability
+      - uuid: 32127ccda67f4405a864426905784cb1
+        name: 'WireGuard {#LABEL}: listen port'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.11.1.1.6.{#SNMPINDEX}]
+        key: sp.mib.wg.interface.port[{#SNMPINDEX}]
+        delay: 30m
+        tags:
+        - tag: component
+          value: wireguard
+        - tag: item
+          value: '{#LABEL}'
+      - uuid: efae7c9c998d4868ac55bb885baca4ac
+        name: 'WireGuard {#LABEL}: peer count'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.11.1.1.7.{#SNMPINDEX}]
+        key: sp.mib.wg.interface.peer_count[{#SNMPINDEX}]
+        delay: 10m
+        tags:
+        - tag: component
+          value: wireguard
+        - tag: item
+          value: '{#LABEL}'
+    - uuid: 8b7fbe536d8844eba98b6d83c3a96f9b
+      name: 'UTM MIB: WireGuard peers'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.11.2.1.2]
+      key: sp.mib.wg.peer.discovery
+      delay: 30m
+      description: Manufacturer MIB table discovery; only creates items for returned rows.
+      item_prototypes:
+      - uuid: 19828bd8a6894370a91cf29ca7698a8c
+        name: 'WireGuard peer {#LABEL}: status'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.11.2.1.3.{#SNMPINDEX}]
+        key: sp.mib.wg.peer.status[{#SNMPINDEX}]
+        delay: 5m
+        tags:
+        - tag: component
+          value: wireguard
+        - tag: item
+          value: '{#LABEL}'
+        valuemap:
+          name: Securepoint WireGuard (MIB)
+        trigger_prototypes:
+        - uuid: c161844813ad4db0aa715ac84d486c18
+          expression: '{$SP.WG.PEER.ALERT:"{#LABEL}"}=1 and min(/Securepoint UTM Standalone v5.6 by SNMP/sp.mib.wg.peer.status[{#SNMPINDEX}],10m)=0'
+          name: 'UTM: required WireGuard peer {#LABEL} disconnected'
+          priority: WARNING
+          description: Opt in only for peers expected to remain up; mobile peers may disconnect normally.
+          tags:
+          - tag: scope
+            value: availability
+      - uuid: 1b152b148ff0420ca7e14dc0f6511c38
+        name: 'WireGuard peer {#LABEL}: last handshake (raw vendor integer)'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.11.2.1.6.{#SNMPINDEX}]
+        key: sp.mib.wg.peer.handshake[{#SNMPINDEX}]
+        delay: 5m
+        description: MIB identifies this as time of latest handshake but does NOT specify Unix timestamp, age, or unit. Do not alarm or render as date until tested.
+        tags:
+        - tag: component
+          value: wireguard
+        - tag: item
+          value: '{#LABEL}'
+      - uuid: 7e8e21998b954d59a149006d62c7891d
+        name: 'WireGuard peer {#LABEL}: bytes sent'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.11.2.1.7.{#SNMPINDEX}]
+        key: sp.mib.wg.peer.bytes.sent[{#SNMPINDEX}]
+        delay: 3m
+        units: B
+        tags:
+        - tag: component
+          value: wireguard
+        - tag: item
+          value: '{#LABEL}'
+      - uuid: 916bcea842ed40b4aebac7a03c181c9c
+        name: 'WireGuard peer {#LABEL}: bytes received'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.11.2.1.8.{#SNMPINDEX}]
+        key: sp.mib.wg.peer.bytes.received[{#SNMPINDEX}]
+        delay: 3m
+        units: B
+        tags:
+        - tag: component
+          value: wireguard
+        - tag: item
+          value: '{#LABEL}'
+      - uuid: 23d854fb56084c3fa45d2bfb6eccc86f
+        name: 'WireGuard peer {#LABEL}: upload bytes/s'
+        type: DEPENDENT
+        key: sp.mib.wg.peer.bps.sent[{#SNMPINDEX}]
+        value_type: FLOAT
+        units: Bps
+        master_item:
+          key: sp.mib.wg.peer.bytes.sent[{#SNMPINDEX}]
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        description: Byte/s from Counter64 delta; first sample will be empty. Monitor for counter reset/wrap anomalies on reboot. No VPN key or endpoint data stored.
+        tags:
+        - tag: component
+          value: wireguard
+      - uuid: f1c48b53feb94d67ab68a963af6a48bf
+        name: 'WireGuard peer {#LABEL}: download bytes/s'
+        type: DEPENDENT
+        key: sp.mib.wg.peer.bps.received[{#SNMPINDEX}]
+        value_type: FLOAT
+        units: Bps
+        master_item:
+          key: sp.mib.wg.peer.bytes.received[{#SNMPINDEX}]
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        description: Byte/s from Counter64 delta; first sample will be empty. Monitor for counter reset/wrap anomalies on reboot. No VPN key or endpoint data stored.
+        tags:
+        - tag: component
+          value: wireguard
+      graph_prototypes:
+      - uuid: 92b1c467773e4b37a5f7bd9b78627583
+        name: 'WireGuard peer {#LABEL}: throughput (bytes/s)'
+        graph_items:
+        - sortorder: '0'
+          color: 1A7D33
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.mib.wg.peer.bps.received[{#SNMPINDEX}]
+        - sortorder: '1'
+          color: CB4B16
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.mib.wg.peer.bps.sent[{#SNMPINDEX}]
+    - uuid: 31471c2478a14c8cabc63184c5ce118c
+      name: 'OPTIONAL: IPsec connection / subnet state'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.2.2.1.6]
+      key: sp.mib.ipsec.subnet.discovery
+      delay: 1h
+      description: 'Composite indices: tunnel, subnet. Enable after confirming table supported.'
+      item_prototypes:
+      - uuid: 74947cd832304b0ca4b0e0ccab187918
+        name: 'IPsec connection index {#SNMPINDEX}: subnet status'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.2.2.1.6.{#SNMPINDEX}]
+        key: sp.mib.ipsec.subnet.status[{#SNMPINDEX}]
+        delay: 5m
+        tags:
+        - tag: component
+          value: ipsec
+        - tag: item
+          value: '{#LABEL}'
+        valuemap:
+          name: Securepoint IPsec (MIB)
+      status: DISABLED
+    - uuid: 91d0b02dd3d54321a135b75df34c8179
+      name: 'OPTIONAL: configuration backup inventory'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.6.1.1.2]
+      key: sp.mib.backup.discovery
+      delay: 12h
+      description: Backup IDs may change; data retention and LLD churn require review.
+      item_prototypes:
+      - uuid: 0c1a0ec5b3f44409ac1134590049f6f5
+        name: 'Configuration backup {#LABEL}: created date'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.4.1.28553.2.1.6.1.1.3.{#SNMPINDEX}]
+        key: sp.mib.backup.date[{#SNMPINDEX}]
+        delay: 12h
+        value_type: CHAR
+        trends: '0'
+        tags:
+        - tag: component
+          value: backup
+        - tag: item
+          value: '{#LABEL}'
+      status: DISABLED
+    - uuid: 1525542bdc33489ba5f0d453766ebac3
+      name: 'OPTIONAL: HOST-RESOURCES per-core CPU'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#CPU_LOAD},1.3.6.1.2.1.25.3.3.1.2]
+      key: sp.std.cpu.discovery
+      delay: 1h
+      description: hrProcessorLoad-only LLD. Unlike hrDevice/hrStorage, this narrowly discovers CPU utilisation. Enable after verifying hrProcessorLoad table.
+      item_prototypes:
+      - uuid: 1c5abcf04b52434ca2616004a14abf38
+        name: 'CPU core {#SNMPINDEX}: utilisation'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.25.3.3.1.2.{#SNMPINDEX}]
+        key: sp.std.cpu.util[{#SNMPINDEX}]
+        delay: 2m
+        units: '%'
+        description: Average non-idle CPU usage over the last minute (HOST-RESOURCES-MIB hrProcessorLoad).
+        tags:
+        - tag: component
+          value: cpu
+      graph_prototypes:
+      - uuid: 71288cb140e54411ac6239c14923dae9
+        name: 'Securepoint UTM v5: CPU core {#SNMPINDEX} usage'
+        graph_items:
+        - sortorder: '0'
+          drawtype: BOLD_LINE
+          color: 199C0D
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.std.cpu.util[{#SNMPINDEX}]
+      status: DISABLED
+    - uuid: ab2942ea40a247aaaaf6aa960aefb64e
+      name: 'Dashboard: interface throughput by IF-MIB (64-bit)'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#IFNAME},1.3.6.1.2.1.31.1.1.1.1]
+      key: sp.dashboard.interface.discovery
+      delay: 1h
+      filter:
+        evaltype: AND
+        conditions:
+        - macro: '{#IFNAME}'
+          value: '{$SP.DASHBOARD.IF.MATCHES}'
+      description: Targeted IF-MIB dashboard discovery for traffic, link state/speed, errors and discards. Only 9 numeric fields per interface; no hrStorage/hrDevice scan. Source indexes come from ifName.
+      item_prototypes:
+      - uuid: 4a43da0c551a4cd8a71bf78444985c88
+        name: 'Dashboard interface {#IFNAME}: received bits/s'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}]
+        key: sp.dashboard.interface.in.bps[{#SNMPINDEX}]
+        delay: 3m
+        value_type: FLOAT
+        units: bps
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        - type: MULTIPLIER
+          parameters:
+          - '8'
+        tags:
+        - tag: component
+          value: interface-traffic
+      - uuid: 5259941df3004f55af6b5881073d7b29
+        name: 'Dashboard interface {#IFNAME}: transmitted bits/s'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}]
+        key: sp.dashboard.interface.out.bps[{#SNMPINDEX}]
+        delay: 3m
+        value_type: FLOAT
+        units: bps
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        - type: MULTIPLIER
+          parameters:
+          - '8'
+        tags:
+        - tag: component
+          value: interface-traffic
+      - uuid: 479bb618d9d046dca9c0923c480c4558
+        name: 'Dashboard interface {#IFNAME}: operational status'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.2.2.1.8.{#SNMPINDEX}]
+        key: sp.dashboard.interface.oper.status[{#SNMPINDEX}]
+        delay: 5m
+        description: 'Targeted IF-MIB column; verify on device if not supported. Values from current interface index.'
+        valuemap:
+          name: Securepoint interface operational status
+        tags:
+        - tag: component
+          value: interface-state
+        trigger_prototypes:
+        - uuid: 11142e0b071f4a51a8973067479cb001
+          expression: '{$SP.IF.ALERT:"{#IFNAME}"}=1 and min(/Securepoint UTM Standalone v5.6 by SNMP/sp.dashboard.interface.oper.status[{#SNMPINDEX}],10m)<>1 and last(/Securepoint UTM Standalone v5.6 by SNMP/sp.dashboard.interface.admin.status[{#SNMPINDEX}])=1'
+          name: 'Securepoint: {#IFNAME} is down while administratively enabled'
+          priority: WARNING
+          description: 'Opt in for always-on interfaces only; on-demand tunnels can be intentionally down.'
+          tags:
+          - tag: scope
+            value: availability
+      - uuid: 21fbf551bcd04c95adcde299ccee729d
+        name: 'Dashboard interface {#IFNAME}: administrative status'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.2.2.1.7.{#SNMPINDEX}]
+        key: sp.dashboard.interface.admin.status[{#SNMPINDEX}]
+        delay: 10m
+        description: 'Targeted IF-MIB column; verify on device if not supported. Values from current interface index.'
+        valuemap:
+          name: Securepoint interface administrative status
+        tags:
+        - tag: component
+          value: interface-state
+      - uuid: 0e0b4b1c9c8248b0a8ecfe7c0bdda368
+        name: 'Dashboard interface {#IFNAME}: link speed (Mbps)'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.31.1.1.1.15.{#SNMPINDEX}]
+        key: sp.dashboard.interface.speed[{#SNMPINDEX}]
+        delay: 30m
+        description: 'Targeted IF-MIB column; verify on device if not supported. Values from current interface index.'
+        units: Mbps
+        tags:
+        - tag: component
+          value: interface-state
+      - uuid: 460a8da4a59f45a4a99c0990bf0627d8
+        name: 'Dashboard interface {#IFNAME}: inbound errors/s'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.2.2.1.14.{#SNMPINDEX}]
+        key: sp.dashboard.interface.in.errors[{#SNMPINDEX}]
+        delay: 5m
+        description: 'Targeted IF-MIB column; verify on device if not supported. Values from current interface index.'
+        value_type: FLOAT
+        units: ops/s
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        tags:
+        - tag: component
+          value: interface-errors
+      - uuid: f0f31dd1a8fa4ce5a8f0b5ddeefdb6b1
+        name: 'Dashboard interface {#IFNAME}: outbound errors/s'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.2.2.1.20.{#SNMPINDEX}]
+        key: sp.dashboard.interface.out.errors[{#SNMPINDEX}]
+        delay: 5m
+        description: 'Targeted IF-MIB column; verify on device if not supported. Values from current interface index.'
+        value_type: FLOAT
+        units: ops/s
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        tags:
+        - tag: component
+          value: interface-errors
+      - uuid: 4d525ba91dcf4519a554cef109808261
+        name: 'Dashboard interface {#IFNAME}: inbound discards/s'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.2.2.1.13.{#SNMPINDEX}]
+        key: sp.dashboard.interface.in.discards[{#SNMPINDEX}]
+        delay: 5m
+        description: 'Targeted IF-MIB column; verify on device if not supported. Values from current interface index.'
+        value_type: FLOAT
+        units: ops/s
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        tags:
+        - tag: component
+          value: interface-discards
+      - uuid: a4a82813ab124567a4cf7fdb4cf1f687
+        name: 'Dashboard interface {#IFNAME}: outbound discards/s'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.2.2.1.19.{#SNMPINDEX}]
+        key: sp.dashboard.interface.out.discards[{#SNMPINDEX}]
+        delay: 5m
+        description: 'Targeted IF-MIB column; verify on device if not supported. Values from current interface index.'
+        value_type: FLOAT
+        units: ops/s
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+        tags:
+        - tag: component
+          value: interface-discards
+      - uuid: 73ab847762e345edac8d26a7946e52d1
+        name: 'Interface {#IFNAME}: description/alias'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.31.1.1.1.18.{#SNMPINDEX}]
+        key: sp.dashboard.interface.alias[{#SNMPINDEX}]
+        delay: 1h
+        description: 'Optional IF-MIB metadata; disabled by default to avoid errors on unsupported virtual interfaces.'
+        status: DISABLED
+        value_type: CHAR
+        trends: '0'
+        tags:
+        - tag: component
+          value: interface-metadata
+      - uuid: ed06a4e166934609a64696adab125d65
+        name: 'Interface {#IFNAME}: IANA interface type'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.2.2.1.3.{#SNMPINDEX}]
+        key: sp.dashboard.interface.type[{#SNMPINDEX}]
+        delay: 1h
+        description: 'Optional IF-MIB metadata; disabled by default to avoid errors on unsupported virtual interfaces.'
+        status: DISABLED
+        tags:
+        - tag: component
+          value: interface-metadata
+      graph_prototypes:
+      - uuid: 7034e1dd10b74195a0e14fa58efbe535
+        name: 'Interfaces: {#IFNAME} throughput (bps)'
+        graph_items:
+        - sortorder: '0'
+          color: 0EC9AC
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.dashboard.interface.in.bps[{#SNMPINDEX}]
+        - sortorder: '1'
+          color: 42A5F5
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.dashboard.interface.out.bps[{#SNMPINDEX}]
+      - uuid: 78390df58a454429a97cc26596015d19
+        name: 'Interfaces: {#IFNAME} errors and discards (packets/s)'
+        graph_items:
+        - sortorder: '0'
+          color: FF6B6B
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.dashboard.interface.in.errors[{#SNMPINDEX}]
+        - sortorder: '1'
+          color: F39C12
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.dashboard.interface.out.errors[{#SNMPINDEX}]
+        - sortorder: '2'
+          color: C678DD
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.dashboard.interface.in.discards[{#SNMPINDEX}]
+        - sortorder: '3'
+          color: 42A5F5
+          item:
+            host: Securepoint UTM Standalone v5.6 by SNMP
+            key: sp.dashboard.interface.out.discards[{#SNMPINDEX}]
+
+    macros:
+    - macro: '{$SP.FIRMWARE.ALERT}'
+      value: '1'
+      description: Opt-out if vendor reported new firmware does not represent updates on this firewall.
+    - macro: '{$SP.LICENSE.WARN.DAYS}'
+      value: '30'
+      description: Calendar days until license renewal warning.
+    - macro: '{$SP.LICENSE.CRIT.DAYS}'
+      value: '7'
+      description: Calendar days until urgent license renewal.
+    - macro: '{$SP.LICENSE.ZERO.IS.EXPIRED}'
+      value: '0'
+      description: 'Opt-in: treat zero remaining days as expired only after license semantics are verified.'
+    - macro: '{$SP.DASHBOARD.IF.MATCHES}'
+      value: '^(LAN.*|WAN.*|DMZ.*|VLAN.*|vlan.*|A[0-9].*|eth[0-9].*|en[opsx].*|wlan.*|wg[0-9].*|tun[0-9].*|tap[0-9].*|ppp.*|bond.*|br.*|bridge.*)$'
+      description: Narrow IF-MIB traffic to typical active interface names; override at host if needed.
+    - macro: '{$SP.SERVICE.ALERT}'
+      value: '0'
+      description: Opt in with context (e.g. {$SP.SERVICE.ALERT:"snmpd"}=1).
+    - macro: '{$SP.IPSEC.ALERT}'
+      value: '0'
+      description: Opt in per always-on IPsec tunnel.
+    - macro: '{$SP.WG.ALERT}'
+      value: '0'
+      description: Opt in per WireGuard interface name; expected to be always up.
+    - macro: '{$SP.WG.PEER.ALERT}'
+      value: '0'
+      description: Opt in per always-on WireGuard peer name.
+    - macro: '{$SP.AV.ALERT}'
+      value: '0'
+      description: Opt in per active AV product.
+    - macro: '{$SP.LICENSE.ALERT}'
+      value: '1'
+      description: 0 until license days semantics are verified.
+    - macro: '{$SP.CONNTRACK.ALERT}'
+      value: '0'
+      description: 0 until both conntrack scalar OIDs are confirmed.
+    - macro: '{$SP.SNMP.NODATA.ALERT}'
+      value: '1'
+      description: 'Alert when no SNMP OS uptime is collected for 15 minutes.'
+    - macro: '{$SP.IF.ALERT}'
+      value: '0'
+      description: 'Opt in by interface name: set {$SP.IF.ALERT:"LAN1"}=1 only for critical always-on interfaces.'
+    valuemaps:
+    - uuid: bc9669b960e84b91ac959309807928e9
+      name: Securepoint interface operational status
+      mappings:
+      - value: '1'
+        newvalue: Up
+      - value: '2'
+        newvalue: Down
+      - value: '3'
+        newvalue: Testing
+      - value: '4'
+        newvalue: Unknown
+      - value: '5'
+        newvalue: Dormant
+      - value: '6'
+        newvalue: Not present
+      - value: '7'
+        newvalue: Lower layer down
+    - uuid: ed89e71fc0e2482ba6e8881b2787b07f
+      name: Securepoint interface administrative status
+      mappings:
+      - value: '1'
+        newvalue: Enabled
+      - value: '2'
+        newvalue: Disabled
+      - value: '3'
+        newvalue: Testing
+    - uuid: dffbe9ca46324b7ea3f4bd32e580b226
+      name: Securepoint application (MIB)
+      mappings:
+      - value: '1'
+        newvalue: Up / running
+      - value: '2'
+        newvalue: Down
+      - value: '3'
+        newvalue: Starting
+      - value: '4'
+        newvalue: Error
+      - value: '5'
+        newvalue: Running but should be down
+      - value: '6'
+        newvalue: Down but should be up
+      - value: '7'
+        newvalue: Required but not configured
+      - value: '8'
+        newvalue: Disabled
+      - value: '9'
+        newvalue: No such service
+    - uuid: 47dd5514593d4384a9cc6104329993b4
+      name: Securepoint IPsec (MIB)
+      mappings:
+      - value: '0'
+        newvalue: Unknown
+      - value: '1'
+        newvalue: Up / established
+      - value: '2'
+        newvalue: Down
+    - uuid: 455fe248afe94070a2a0e454e09e51a4
+      name: Securepoint OpenVPN (MIB)
+      mappings:
+      - value: '1'
+        newvalue: Connecting
+      - value: '2'
+        newvalue: Assigning IP
+      - value: '3'
+        newvalue: Adding routes
+      - value: '4'
+        newvalue: Connected
+      - value: '5'
+        newvalue: Reconnecting
+      - value: '6'
+        newvalue: Exiting
+      - value: '7'
+        newvalue: Unknown / query error
+    - uuid: 1007216722c74adfa56c6693995ff753
+      name: Securepoint WireGuard (MIB)
+      mappings:
+      - value: '0'
+        newvalue: Disconnected
+      - value: '1'
+        newvalue: Connected
+      - value: '2'
+        newvalue: Unknown / query error
+      - value: '3'
+        newvalue: Deleted
+    - uuid: a6171b55dc444d61a0275ff1fae26535
+      name: Securepoint antivirus update (MIB)
+      mappings:
+      - value: '1'
+        newvalue: Last update successful
+      - value: '2'
+        newvalue: Last update failed
+      - value: '3'
+        newvalue: Update in progress
+    - uuid: be57365e31fe49c2a4462fa236d43c36
+      name: Securepoint cluster enabled (MIB)
+      mappings:
+      - value: '0'
+        newvalue: Disabled
+      - value: '1'
+        newvalue: Enabled
+    dashboards:
+    - uuid: 06999722a3964aaaa7adf296eecec7e6
+      name: Securepoint UTM | Standalone Command Center
+      pages:
+      - name: 'Overview'
+        widgets:
+        - type: item
+          name: 'Firewall'
+          x: '0'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.system.name
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'Firewall'
+          - type: STRING
+            name: reference
+            value: 'Q0001'
+        - type: item
+          name: 'Uptime'
+          x: '12'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.uptime
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'Uptime'
+          - type: STRING
+            name: reference
+            value: 'Q0002'
+        - type: item
+          name: 'CPU (%)'
+          x: '24'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.cpu.used_pct
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: '0EC9AC'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'CPU (%)'
+          - type: STRING
+            name: reference
+            value: 'Q0003'
+        - type: item
+          name: 'RAM (%)'
+          x: '36'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.mem.used_pct
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: '42A5F5'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'RAM (%)'
+          - type: STRING
+            name: reference
+            value: 'Q0004'
+        - type: item
+          name: 'Processes'
+          x: '48'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.hr.proc.count
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: '9C27B0'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'Processes'
+          - type: STRING
+            name: reference
+            value: 'Q0005'
+        - type: item
+          name: 'TCP sessions'
+          x: '60'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.std.tcp.established
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: 'FFCA28'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'TCP sessions'
+          - type: STRING
+            name: reference
+            value: 'Q0006'
+        - type: gauge
+          name: 'CPU load'
+          x: '0'
+          'y': '3'
+          width: '18'
+          height: '4'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.cpu.used_pct
+          - type: STRING
+            name: description
+            value: 'CPU load'
+          - type: INTEGER
+            name: th_show_arc
+            value: '1'
+          - type: INTEGER
+            name: th_show_labels
+            value: '1'
+          - type: STRING
+            name: units
+            value: '%'
+          - type: STRING
+            name: reference
+            value: 'Q0007'
+          - type: STRING
+            name: thresholds.0.color
+            value: '0EC9AC'
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '0'
+          - type: STRING
+            name: thresholds.1.color
+            value: 'FFCA28'
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '75'
+          - type: STRING
+            name: thresholds.2.color
+            value: 'FF465C'
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '90'
+        - type: gauge
+          name: 'Memory load'
+          x: '18'
+          'y': '3'
+          width: '18'
+          height: '4'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.mem.used_pct
+          - type: STRING
+            name: description
+            value: 'Memory load'
+          - type: INTEGER
+            name: th_show_arc
+            value: '1'
+          - type: INTEGER
+            name: th_show_labels
+            value: '1'
+          - type: STRING
+            name: units
+            value: '%'
+          - type: STRING
+            name: reference
+            value: 'Q0008'
+          - type: STRING
+            name: thresholds.0.color
+            value: '0EC9AC'
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '0'
+          - type: STRING
+            name: thresholds.1.color
+            value: 'FFCA28'
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '75'
+          - type: STRING
+            name: thresholds.2.color
+            value: 'FF465C'
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '90'
+        - type: topitems
+          name: 'Interfaces | live throughput'
+          x: '36'
+          'y': '3'
+          width: '36'
+          height: '4'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Dashboard interface *: * bits/s'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'interface-traffic'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0009'
+          - type: INTEGER
+            name: columns.0.display
+            value: '2'
+          - type: STRING
+            name: columns.0.base_color
+            value: '42A5F5'
+        - type: graph
+          name: 'CPU / RAM, last hours'
+          x: '0'
+          'y': '7'
+          width: '36'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint Dashboard: CPU and RAM occupancy (%)'
+          - type: STRING
+            name: reference
+            value: 'Q0010'
+        - type: graphprototype
+          name: 'Interface traffic | Rx / Tx'
+          x: '36'
+          'y': '7'
+          width: '36'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: columns
+            value: '1'
+          - type: GRAPH_PROTOTYPE
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Interfaces: {#IFNAME} throughput (bps)'
+          - type: STRING
+            name: reference
+            value: 'Q0011'
+        - type: graph
+          name: 'TCP sessions'
+          x: '0'
+          'y': '12'
+          width: '18'
+          height: '4'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: established TCP sessions'
+          - type: STRING
+            name: reference
+            value: 'Q0012'
+        - type: graph
+          name: 'Process count'
+          x: '18'
+          'y': '12'
+          width: '18'
+          height: '4'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: system process and user counts'
+          - type: STRING
+            name: reference
+            value: 'Q0013'
+        - type: graph
+          name: 'TCP retransmissions'
+          x: '36'
+          'y': '12'
+          width: '18'
+          height: '4'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: TCP retransmissions and inbound errors per second'
+          - type: STRING
+            name: reference
+            value: 'Q0014'
+        - type: graph
+          name: 'UDP activity'
+          x: '54'
+          'y': '12'
+          width: '18'
+          height: '4'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: UDP packets per second'
+          - type: STRING
+            name: reference
+            value: 'Q0015'
+        - type: topitems
+          name: 'Services | status only'
+          x: '0'
+          'y': '16'
+          width: '24'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Service *: state'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'service'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0016'
+        - type: topitems
+          name: 'WireGuard | peer state only'
+          x: '24'
+          'y': '16'
+          width: '24'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'WireGuard peer *: status'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'wireguard'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0017'
+        - type: problems
+          name: 'Current problems'
+          x: '48'
+          'y': '16'
+          width: '24'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: show
+            value: '3'
+          - type: INTEGER
+            name: show_tags
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0018'
+      - name: 'Network'
+        widgets:
+        - type: item
+          name: 'TCP established'
+          x: '0'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.std.tcp.established
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: '42A5F5'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'TCP established'
+          - type: STRING
+            name: reference
+            value: 'Q0019'
+        - type: item
+          name: 'TCP opens/s'
+          x: '12'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.std.tcp.active_opens
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: '0EC9AC'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'TCP opens/s'
+          - type: STRING
+            name: reference
+            value: 'Q0020'
+        - type: item
+          name: 'TCP retrans/s'
+          x: '24'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.std.tcp.retransmits
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: 'FFCA28'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'TCP retrans/s'
+          - type: STRING
+            name: reference
+            value: 'Q0021'
+        - type: item
+          name: 'UDP inbound/s'
+          x: '36'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.std.udp.in_datagrams
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: '42A5F5'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'UDP inbound/s'
+          - type: STRING
+            name: reference
+            value: 'Q0022'
+        - type: item
+          name: 'UDP errors/s'
+          x: '48'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.std.udp.in_errors
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: 'FF465C'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'UDP errors/s'
+          - type: STRING
+            name: reference
+            value: 'Q0023'
+        - type: item
+          name: 'IP discards/s'
+          x: '60'
+          'y': '0'
+          width: '12'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.std.ip.in_discards
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: 'FFCA28'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'IP discards/s'
+          - type: STRING
+            name: reference
+            value: 'Q0024'
+        - type: topitems
+          name: 'Interface Rx/Tx | snapshot'
+          x: '0'
+          'y': '3'
+          width: '36'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Dashboard interface *: * bits/s'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'interface-traffic'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0025'
+          - type: INTEGER
+            name: columns.0.display
+            value: '2'
+          - type: STRING
+            name: columns.0.base_color
+            value: '42A5F5'
+        - type: graphprototype
+          name: 'Interfaces: live traffic'
+          x: '36'
+          'y': '3'
+          width: '36'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: columns
+            value: '1'
+          - type: GRAPH_PROTOTYPE
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Interfaces: {#IFNAME} throughput (bps)'
+          - type: STRING
+            name: reference
+            value: 'Q0026'
+        - type: graph
+          name: 'TCP active opens and failures'
+          x: '0'
+          'y': '8'
+          width: '36'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: TCP session opens and failed attempts per second'
+          - type: STRING
+            name: reference
+            value: 'Q0027'
+        - type: graph
+          name: 'TCP resends/errors'
+          x: '36'
+          'y': '8'
+          width: '36'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: TCP retransmissions and inbound errors per second'
+          - type: STRING
+            name: reference
+            value: 'Q0028'
+        - type: graph
+          name: 'UDP incoming and outgoing'
+          x: '0'
+          'y': '13'
+          width: '36'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: UDP packets per second'
+          - type: STRING
+            name: reference
+            value: 'Q0029'
+        - type: graph
+          name: 'UDP errors / closed ports'
+          x: '36'
+          'y': '13'
+          width: '36'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: UDP errors per second'
+          - type: STRING
+            name: reference
+            value: 'Q0030'
+        - type: graph
+          name: 'Established TCP sessions'
+          x: '0'
+          'y': '18'
+          width: '36'
+          height: '4'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: established TCP sessions'
+          - type: STRING
+            name: reference
+            value: 'Q0031'
+        - type: graph
+          name: 'IP drops / missing routes'
+          x: '36'
+          'y': '18'
+          width: '36'
+          height: '4'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Securepoint: IP discards and routing misses per second'
+          - type: STRING
+            name: reference
+            value: 'Q0032'
+      - name: Interfaces
+        widgets:
+        - type: topitems
+          name: 'All interfaces | operational states'
+          x: '0'
+          'y': '0'
+          width: '24'
+          height: '6'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Dashboard interface *: operational status'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'interface-state'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'X0001'
+        - type: topitems
+          name: 'All interfaces | administrative states'
+          x: '24'
+          'y': '0'
+          width: '24'
+          height: '6'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Dashboard interface *: administrative status'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'interface-state'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'X0002'
+        - type: topitems
+          name: 'All interfaces | link speed'
+          x: '48'
+          'y': '0'
+          width: '24'
+          height: '6'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Dashboard interface *: link speed (Mbps)'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'interface-state'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'X0003'
+        - type: topitems
+          name: 'All interfaces | receive and transmit'
+          x: '0'
+          'y': '6'
+          width: '36'
+          height: '7'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Dashboard interface *: * bits/s'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'interface-traffic'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'X0004'
+        - type: topitems
+          name: 'All interfaces | errors per second'
+          x: '36'
+          'y': '6'
+          width: '36'
+          height: '7'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Dashboard interface *: * errors/s'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'interface-errors'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'X0005'
+        - type: topitems
+          name: 'All interfaces | packet discards'
+          x: '0'
+          'y': '13'
+          width: '72'
+          height: '6'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Dashboard interface *: * discards/s'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'interface-discards'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'X0006'
+        - type: graphprototype
+          name: 'Per-interface traffic detail'
+          x: '0'
+          'y': '19'
+          width: '36'
+          height: '7'
+          fields:
+          - type: INTEGER
+            name: columns
+            value: '1'
+          - type: GRAPH_PROTOTYPE
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Interfaces: {#IFNAME} throughput (bps)'
+          - type: STRING
+            name: reference
+            value: 'X0007'
+        - type: graphprototype
+          name: 'Per-interface errors and discards detail'
+          x: '36'
+          'y': '19'
+          width: '36'
+          height: '7'
+          fields:
+          - type: INTEGER
+            name: columns
+            value: '1'
+          - type: GRAPH_PROTOTYPE
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'Interfaces: {#IFNAME} errors and discards (packets/s)'
+          - type: STRING
+            name: reference
+            value: 'X0008'
+      - name: 'VPN & Security'
+        widgets:
+        - type: item
+          name: 'Installed firmware'
+          x: '0'
+          'y': '0'
+          width: '18'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.mib.firmware.current
+          - type: STRING
+            name: description
+            value: 'Installed firmware'
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: value_color
+            value: '42A5F5'
+          - type: INTEGER
+            name: value_size
+            value: '28'
+          - type: STRING
+            name: reference
+            value: 'SFW01'
+        - type: item
+          name: 'New firmware reported'
+          x: '18'
+          'y': '0'
+          width: '18'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.mib.firmware.new
+          - type: STRING
+            name: description
+            value: 'New firmware reported'
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: value_color
+            value: '0EC9AC'
+          - type: INTEGER
+            name: value_size
+            value: '28'
+          - type: STRING
+            name: reference
+            value: 'SFW02'
+        - type: item
+          name: 'License days remaining'
+          x: '36'
+          'y': '0'
+          width: '18'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.mib.license.days
+          - type: STRING
+            name: description
+            value: 'License days remaining'
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: value_color
+            value: 'FFCA28'
+          - type: INTEGER
+            name: value_size
+            value: '28'
+          - type: STRING
+            name: reference
+            value: 'SFW03'
+        - type: item
+          name: 'License type'
+          x: '54'
+          'y': '0'
+          width: '18'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.mib.license.type
+          - type: STRING
+            name: description
+            value: 'License type'
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: value_color
+            value: 'C6A0FF'
+          - type: INTEGER
+            name: value_size
+            value: '28'
+          - type: STRING
+            name: reference
+            value: 'SFW04'
+        - type: item
+          name: 'Firewall'
+          x: '0'
+          'y': '3'
+          width: '18'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.system.name
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'Firewall'
+          - type: STRING
+            name: reference
+            value: 'Q0033'
+        - type: item
+          name: 'Uptime'
+          x: '18'
+          'y': '3'
+          width: '18'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.uptime
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'Uptime'
+          - type: STRING
+            name: reference
+            value: 'Q0034'
+        - type: item
+          name: 'CPU (%)'
+          x: '36'
+          'y': '3'
+          width: '18'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.cpu.used_pct
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: '0EC9AC'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'CPU (%)'
+          - type: STRING
+            name: reference
+            value: 'Q0035'
+        - type: item
+          name: 'RAM (%)'
+          x: '54'
+          'y': '3'
+          width: '18'
+          height: '3'
+          hide_header: 'YES'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              key: sp.dashboard.mem.used_pct
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
+            value: '5'
+          - type: STRING
+            name: sparkline.color
+            value: '42A5F5'
+          - type: INTEGER
+            name: sparkline.fill
+            value: '3'
+          - type: STRING
+            name: sparkline.time_period.from
+            value: 'now-6h'
+          - type: STRING
+            name: sparkline.time_period.to
+            value: 'now'
+          - type: INTEGER
+            name: value_size
+            value: '34'
+          - type: STRING
+            name: description
+            value: 'RAM (%)'
+          - type: STRING
+            name: reference
+            value: 'Q0036'
+        - type: topitems
+          name: 'WireGuard peers | status'
+          x: '0'
+          'y': '6'
+          width: '24'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'WireGuard peer *: status'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'wireguard'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0037'
+        - type: topitems
+          name: 'IPsec tunnels | status'
+          x: '24'
+          'y': '6'
+          width: '24'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'IPsec *: tunnel status'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'ipsec'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0038'
+        - type: topitems
+          name: 'OpenVPN clients | count'
+          x: '48'
+          'y': '6'
+          width: '24'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'OpenVPN *: connected clients'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'openvpn'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0039'
+        - type: topitems
+          name: 'WireGuard interface | state'
+          x: '0'
+          'y': '11'
+          width: '24'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'WireGuard *: status'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'wireguard'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0040'
+        - type: topitems
+          name: 'Security services | state'
+          x: '24'
+          'y': '11'
+          width: '24'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Service *: state'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'service'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0041'
+        - type: topitems
+          name: 'Antivirus signature updates'
+          x: '48'
+          'y': '11'
+          width: '24'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'Antivirus *: pattern update state'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'av'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0042'
+        - type: graphprototype
+          name: 'WireGuard peer transfer rates'
+          x: '0'
+          'y': '16'
+          width: '36'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: columns
+            value: '1'
+          - type: GRAPH_PROTOTYPE
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'WireGuard peer {#LABEL}: throughput (bytes/s)'
+          - type: STRING
+            name: reference
+            value: 'Q0043'
+        - type: graphprototype
+          name: 'OpenVPN connected clients'
+          x: '36'
+          'y': '16'
+          width: '36'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: columns
+            value: '1'
+          - type: GRAPH_PROTOTYPE
+            name: graphid.0
+            value:
+              host: 'Securepoint UTM Standalone v5.6 by SNMP'
+              name: 'OpenVPN {#LABEL}: active client count'
+          - type: STRING
+            name: reference
+            value: 'Q0044'
+        - type: topitems
+          name: 'WireGuard | peer traffic'
+          x: '0'
+          'y': '21'
+          width: '36'
+          height: '5'
+          fields:
+          - type: STRING
+            name: columns.0.items.0
+            value: 'WireGuard peer *: * bytes/s'
+          - type: STRING
+            name: columns.0.item_tags.0.tag
+            value: 'component'
+          - type: INTEGER
+            name: columns.0.item_tags.0.operator
+            value: '1'
+          - type: STRING
+            name: columns.0.item_tags.0.value
+            value: 'wireguard'
+          - type: INTEGER
+            name: layout
+            value: '1'
+          - type: INTEGER
+            name: show_column_header
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0045'
+        - type: problems
+          name: 'Current problems'
+          x: '36'
+          'y': '21'
+          width: '36'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: show
+            value: '3'
+          - type: INTEGER
+            name: show_tags
+            value: '1'
+          - type: STRING
+            name: reference
+            value: 'Q0046'
+
+  graphs:
+  - uuid: ab8ac6aab976492aae0a8a92f7ffcf2a
+    name: 'Securepoint MIB: conntrack used versus max'
+    graph_items:
+    - sortorder: '0'
+      color: 1A7D33
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.mib.conntrack.current
+    - sortorder: '1'
+      color: CB4B16
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.mib.conntrack.maximum
+  - uuid: 23cacc0fcaa04e13ac3324b37cc07987
+    name: 'Securepoint MIB: license days remaining'
+    graph_items:
+    - sortorder: '0'
+      color: 1A7D33
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.mib.license.days
+  - uuid: 9d6676229a61445aadbc2262475e30fa
+    name: 'Securepoint: established TCP sessions'
+    graph_items:
+    - drawtype: SINGLE_LINE
+      color: 1A7DC0
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.tcp.established
+  - uuid: 68f6d02b78d148afa5edd8f77f60835b
+    name: 'Securepoint: TCP session opens and failed attempts per second'
+    graph_items:
+    - drawtype: SINGLE_LINE
+      color: 1A7DC0
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.tcp.active_opens
+    - drawtype: SINGLE_LINE
+      color: EAA220
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.tcp.failed
+  - uuid: b723bd4eb15f4d52ada3048e1efc3da2
+    name: 'Securepoint: TCP retransmissions and inbound errors per second'
+    graph_items:
+    - drawtype: SINGLE_LINE
+      color: 1A7DC0
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.tcp.retransmits
+    - drawtype: SINGLE_LINE
+      color: EAA220
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.tcp.in_errors
+  - uuid: 671845f01efc4bdcaf3dc3108b59a25c
+    name: 'Securepoint: UDP packets per second'
+    graph_items:
+    - drawtype: SINGLE_LINE
+      color: 1A7DC0
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.udp.in_datagrams
+    - drawtype: SINGLE_LINE
+      color: EAA220
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.udp.out_datagrams
+  - uuid: 131699030eef416fad3c125750622433
+    name: 'Securepoint: UDP errors per second'
+    graph_items:
+    - drawtype: SINGLE_LINE
+      color: 1A7DC0
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.udp.in_errors
+    - drawtype: SINGLE_LINE
+      color: EAA220
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.udp.no_ports
+  - uuid: 4e71b005ba0c4ae9a3c143c1be9b1ee5
+    name: 'Securepoint: IP discards and routing misses per second'
+    graph_items:
+    - drawtype: SINGLE_LINE
+      color: 1A7DC0
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.ip.in_discards
+    - drawtype: SINGLE_LINE
+      color: EAA220
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.ip.out_discards
+    - drawtype: SINGLE_LINE
+      color: 1A7DC0
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.std.ip.out_no_route
+  - uuid: f31c6e2729be4123a811bb4f08605adb
+    name: 'Securepoint: system process and user counts'
+    graph_items:
+    - drawtype: SINGLE_LINE
+      color: 1A7DC0
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.hr.proc.count
+    - drawtype: SINGLE_LINE
+      color: EAA220
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.hr.user.count
+  - uuid: 2eb9ff7ec1ef484ea427c41aa99350d2
+    name: 'Securepoint Dashboard: CPU and RAM occupancy (%)'
+    graph_items:
+    - sortorder: '0'
+      color: 0EC9AC
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.dashboard.cpu.used_pct
+    - sortorder: '1'
+      color: 42A5F5
+      item:
+        host: Securepoint UTM Standalone v5.6 by SNMP
+        key: sp.dashboard.mem.used_pct
