@@ -50,3 +50,13 @@ If the standalone import or host monitoring fails, Unlink and clear **Standalone
 Zabbix official guidance: [Linking / Unlinking](https://www.zabbix.com/documentation/8.0/en/manual/config/templates/linking) and [Template nesting](https://www.zabbix.com/documentation/8.0/en/manual/config/templates/nesting).
 
 This file is a lab/test candidate, **not** certified against a live Zabbix instance. The GitHub CI validator only checks structural consistency.
+
+## First live acceptance observation — 2026-10-21
+
+The user successfully **imported and linked** `Securepoint UTM Standalone v5.6 by SNMP` to a Zabbix 8.0 host. In the host configuration screenshot it was the sole linked template, with a configured SNMP host interface. The **Interfaces** dashboard successfully discovered six interface rows (three LAN/VLAN-like, one tun and two WireGuard), and returned mapped **operational=Up**, **administrative=Enabled**, and **ifHighSpeed** values (Gigabit Ethernet on three LAN-like interfaces, zero reported for virtual VPN interfaces). These are confirmed live UI observations, not just offline YAML validation.
+
+**Still awaiting confirmation:** screenshot showed blank values for receive/transmit rates and interface errors while collection had only recently started. These use `CHANGE_PER_SECOND` and require at least two successful samples (RX/TX polling approximately 3m; error/discard polling approximately 5m). Check after 10–15 minutes. If still blank, inspect unsupported item status and exact OIDs; do not assume counters work merely because discovery succeeded. The own Dashboard includes per-interface **throughput** and **errors/discards** graph prototypes below the summary tables; successful nonempty graphs remain unconfirmed. Vendor firmware/license OIDs and maintenance triggers are also unconfirmed.
+
+Operational state `Up` for a virtual WireGuard interface does **not** prove that any peer handshake or tunnel is healthy; that requires its separate vendor-specific monitoring.
+
+This acceptance report intentionally excludes device hostname, customer names, site address, credentials, and management IP.
