@@ -24,3 +24,7 @@ The earlier experimental v2/v3 builds generated over 400 Items on one installati
 ## Compatibility reports
 
 Create an issue containing version, list of keys, and sanitized errors from the checklist in [TESTING.md](TESTING.md). Do not post IP addresses, tunnel names or credentials.
+
+## Host update: graph `Securepoint: CPU core {#SNMPINDEX} - utilisation` already exists
+
+A v2/v3 graph prototype had the same name as the optional v5 per-core CPU graph, but its Items have different keys. Zabbix refuses the host update even if the new CPU discovery is disabled. **Do not unlink-and-clear or erase historical data solely to resolve this.** The v5 graph prototype was renamed to `Securepoint UTM v5: CPU core {#SNMPINDEX} usage`. Re-import the corrected template with *Update existing* enabled and *Delete missing* disabled; then retry host linkage. Other conflicts, if any, must be diagnosed by their exact Zabbix error.
