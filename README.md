@@ -1,5 +1,9 @@
 # Securepoint UTM → Zabbix
 
+[![Template validation](https://github.com/M1t35ha/Securepoint-zabbix/actions/workflows/validate.yml/badge.svg)](https://github.com/M1t35ha/Securepoint-zabbix/actions/workflows/validate.yml)
+
+**[Русская инструкция](docs/README_RU.md)** · [Current tasks](https://github.com/M1t35ha/Securepoint-zabbix/issues)
+
 Community-maintained, **experimental** monitoring template for Securepoint NextGen UTM 14.x and Zabbix 8.0 (7.0 export compatibility).
 
 > [!WARNING]
