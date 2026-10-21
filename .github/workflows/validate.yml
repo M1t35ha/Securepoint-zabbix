@@ -22,5 +22,6 @@ jobs:
           python tools/validate_template.py templates/securepoint-utm-unified-v5.1-dashboard.yaml
           python tools/validate_template.py templates/securepoint-utm-unified-v5.2-dashboard.yaml
           python tools/validate_template.py templates/securepoint-utm-unified-v5.3-dashboard.yaml
+          python tools/validate_template.py templates/securepoint-utm-unified-v5.4-firmware-license.yaml
       - name: Offline SNMPwalk parser tests (no device required)
         run: python -m unittest discover -s tests -v
