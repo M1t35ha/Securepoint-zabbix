@@ -32,3 +32,12 @@ This is a prioritized engineering plan, **not** a claim of current support.
 ## Engineering rules
 
 Every new OID must have a documented type, an explicitly stated source (MIB/standard MIB/live observation), evidence of support on tested firmware, stable discovery indexing and a safe failure mode. Every new alert must explain whether the device might be intentionally offline.
+
+## v5.5 interface support (2026-10-21)
+
+- [x] Add status, link speed, errors and discards to bounded IF-MIB discovery.
+- [x] Dedicated **Interfaces** page listing all discovered devices at once; traffic and error graph prototypes remain selectable.
+- [x] Preserve vendor VPN/firmware/license features and official generic SNMP parent.
+- [x] Document the inherited **Network interfaces** dashboard limitation and safe removal options.
+- [ ] Confirm all interface statuses and rates on actual Securepoint 14.x firmware.
+- [ ] If only Firewall should hide the parent dashboard, trial a detached/clone approach on a separate host; do not remove generic monitoring without checking macros and history.
