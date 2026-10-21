@@ -41,3 +41,13 @@ Every new OID must have a documented type, an explicitly stated source (MIB/stan
 - [x] Document the inherited **Network interfaces** dashboard limitation and safe removal options.
 - [ ] Confirm all interface statuses and rates on actual Securepoint 14.x firmware.
 - [ ] If only Firewall should hide the parent dashboard, trial a detached/clone approach on a separate host; do not remove generic monitoring without checking macros and history.
+
+## v5.6 Standalone (2026-10-21)
+
+- [x] Build separate standalone YAML with NO generic SNMP template inheritance.
+- [x] Preserve own IF-MIB discovery, all four dashboard pages, and Securepoint VPN/license/firmware Items.
+- [x] Add self-monitoring of missing SNMP data and opt-in critical interface link-down alerts.
+- [x] Write migration/rollback guide, including two-step Unlink and clear and history-loss warning.
+- [ ] Complete live import and Zabbix 8.0 host acceptance.
+- [ ] Confirm interface discovery, status, link speed and missing SNMP OIDs against Securepoint GUI.
+- [ ] Verify firmware/license vendor fields and alert routing to email/Teams before rolling out.
