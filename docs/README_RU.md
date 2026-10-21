@@ -1,5 +1,12 @@
 # Securepoint → Zabbix: инструкция на русском
 
+## Release Candidate 1 — v1.0.0-rc.1
+
+**Актуальный кандидат:** [Standalone v5.6 YAML](../templates/securepoint-utm-standalone-v5.6.yaml) · [что уже проверено и что остаётся](RELEASE_CANDIDATE_1.md).
+
+Шаблон установлен в Zabbix 8.0 и обнаружил шесть интерфейсов, их состояния и скорости. Остальные показатели, особенно firmware/license, ещё проверяем. Ветка RC1 заморожена как контрольная точка; это не финальный релиз.
+
+
 ## Рекомендуемый следующий тест: Standalone v5.6 без родительского шаблона
 
 [**Скачать v5.6 YAML**](../templates/securepoint-utm-standalone-v5.6.yaml) · [Полная инструкция перехода и отката](V5_6_STANDALONE.md)
