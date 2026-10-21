@@ -1,31 +1,37 @@
-# Installation (test host first)
+# Install / migrate — Standalone Securepoint v1.0.0-rc.1
 
-## Unified v5 candidate (read before importing)
+[Template YAML](../templates/securepoint-utm-standalone-v5.6.yaml) · [Russian guide](README_RU.md) · [RC1 tests](TESTING.md)
 
-v5 is at `templates/securepoint-utm-unified-v5.yaml`. It has its own template name/UUIDs and may be tested **alongside** the v4 reference. The old v2/v3 experiments with unsupported-items storms are not part of v5.
+**Target:** Securepoint NextGen UTM 14.x with SNMP enabled; Zabbix 8.0. The exported YAML uses the Zabbix 7.0 format, accepted by the tested 8.0 RC instance. This RC has no parent template dependency.
 
-**Until live-device acceptance tests pass, do not import v5 into the production host.** On the test day: export existing templates, create a separate test host, link v5 only (with its inherited generic template), and verify SNMPv3 read-only connectivity. Confirm that LLD creates only expected devices and that raw counter rates and firmware/HA/licence mappings are accurate. After validation, retire only the obsolete monitoring attachment; avoid `Delete missing` during initial import. Any `Unlink and clear` destroys data history and must be explicitly approved.
+## Fresh host
 
-See [design](V5_DESIGN.md) and [test checklist](TESTING.md).
+1. Download the YAML and go to **Data collection → Templates → Import**. Enable **Create new** and **Update existing** where appropriate; **Delete missing OFF**.
+2. Create a monitored Host with one SNMP interface targeting the firewall on UDP/161. Configure read-only SNMPv3 credentials **in Zabbix**, not in Git. Prefer `authPriv` if available, and restrict access to your Zabbix server/proxy.
+3. Link only **Securepoint UTM Standalone v5.6 by SNMP**. No Zabbix Agent and no `Network Generic Device by SNMP` required.
+4. Navigate to **Monitoring → Hosts → [host] → Dashboards → Securepoint UTM | Standalone Command Center**.
+5. Four pages should appear: Overview, Network, Interfaces, VPN & Security. Allow up to the LLD interval (default 1 hour) and two samples for per-second counters; then verify [Latest data and unsupported items](TESTING.md).
+6. Customize host macros only after determining intended behavior. VPN interfaces may legitimately report zero traffic or disconnected peers.
 
+## Migration from old Securepoint unified templates
 
-**Target:** Zabbix 8.0 / Securepoint NextGen UTM 14.x / read-only SNMPv3. This repository currently publishes a **test-stage** template.
+**Do not link old and standalone templates together**: overlapping item keys and graphs can cause host update errors.
 
-1. In Zabbix, make sure the official `Network Generic Device by SNMP` template is installed.
-2. Import `templates/securepoint-utm-mib-v4.yaml` in **Data collection → Templates → Import**. Do **not** enable **Delete missing** for unrelated objects.
-3. Add a **new test host** with one SNMP interface set to the *firewall's management IP*. Set its SNMP version/security to match the Securepoint service. Use credentials stored **only in Zabbix**. Never copy them to issues, source control or SNMP logs.
-4. Restrict firewall SNMP access to the Zabbix server/proxy. Verify IP reachability, UDP/161 rules, and SNMPv3 security level before troubleshooting individual OIDs.
-5. Link **Securepoint UTM MIB Mapped v4 by SNMP**; the template already inherits `Network Generic Device by SNMP`.
-6. Wait for discovery. Check **Monitoring → Latest data** and the discovered Items, then collect evidence with [TESTING.md](TESTING.md).
-7. The 0/1/2/3 state numbers are decoded with manufacturer value maps where documented. Alerts remain disabled by default through `{$SP.*.ALERT}` macros; enable per required always-on service/tunnel *only after* confirming expected behavior.
-8. If a device does not implement one scalar OID, disable that Item for that device and record this in the compatibility matrix.
+1. Import v5.6 as a **new template**, do not link yet.
+2. Export the old Zabbix configuration for rollback. Record host macros and SNMP interface settings.
+3. In the old Host, **Unlink and clear** `Securepoint UTM Unified v5 by SNMP` and any *directly linked* old generic/experimental templates if they are no longer wanted; save the Host **Update**.
+4. Reopen the Host and add **Securepoint UTM Standalone v5.6 by SNMP**; **Update** again.
+5. Confirm the inherited `Network interfaces` Host Dashboard disappears and own Dashboard loads. Old history and template-derived Items cleared in step 3 **cannot be restored by relinking**.
+6. Do not delete the global generic template if other hosts depend on it.
 
-**Do not use Unlink and clear on the existing production host during initial tests:** it deletes existing items/history. Do not bulk-import experimental old v2/v3 discovery rules.
+The detailed migration rationale and rollback can be found in the [v5.6 migration record](V5_6_STANDALONE.md).
 
-## SNMPv3
+## Alerts and support caveats
 
-Securepoint and Zabbix must agree on username, security level, authentication algorithm and authentication secret. Confirm reachability without publishing any authentication secrets in logs or ticket screenshots. SNMPv3 `authNoPriv` does **not encrypt** the data payload; prefer `authPriv` if supported by both device and operational policy.
+- Firmware *difference* and license 30/7-day trigger definitions are included. The firmware field and a mismatch Problem are observed working; renewal thresholds, exactly-zero days, and alert **delivery** still need verification.
+- `{$SP.LICENSE.ZERO.IS.EXPIRED}=0` by default, because a zero may mean an unlimited or different license model. Only opt in after confirming the license semantics.
+- `{$SP.IF.ALERT}` is off by default. Enable a context macro for an always-on interface; do not alert on intentionally disconnected VPNs.
+- SNMP 15-minute no-data trigger is enabled but its failure/recovery handling requires a controlled lab test.
+- No SSH/API access or configuration changes to the firewall are required by this template.
 
-## Upgrade procedure
-
-Use a branch + PR → CI offline checks → sandbox import → test host SNMP checks → review generated LLD count → production migration. Keep a backup of your original template and Zabbix configuration.
+See [Troubleshooting](TROUBLESHOOTING.md), [OID reference](OID_REFERENCE.md), and [RC1 acceptance status](RELEASE_CANDIDATE_1.md).
