@@ -1,0 +1,1266 @@
+# Experimental Securepoint MIB-mapped Zabbix template; test before production.
+zabbix_export:
+  version: "7.0"
+  template_groups:
+    -
+      uuid: "784576545c19437eac38b7203b48acb6"
+      name: "Templates/Network devices"
+  templates:
+    -
+      uuid: "2b95f452af3848889e758df62ecd8365"
+      template: "Securepoint UTM Unified v5 by SNMP"
+      name: "Securepoint UTM Unified v5 by SNMP"
+      description: "Experimental MIB-mapped Securepoint 14.x SNMPv3 template. Offline-validated only; verify on device. No hrDevice/hrStorage discovery, no swap division. Triggers opt-in. Manufacturer MIB files NOT included."
+      vendor:
+        name: "Community (unofficial)"
+        version: "8.0-4"
+      groups:
+        -
+          name: "Templates/Network devices"
+      templates:
+        -
+          name: "Network Generic Device by SNMP"
+      tags:
+        -
+          tag: "class"
+          value: "network"
+        -
+          tag: "target"
+          value: "securepoint-utm"
+      items:
+        -
+          uuid: "750d821f59a14dea89f622b564551700"
+          name: "UTM: Product name"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.1.1.0]"
+          key: "sp.mib.product.name"
+          delay: "1h"
+          value_type: "CHAR"
+          trends: "0"
+          tags:
+            -
+              tag: "component"
+              value: "inventory"
+        -
+          uuid: "e67fa39922b2466c854254cf761e35a2"
+          name: "UTM: Current firmware version"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.1.2.7.0]"
+          key: "sp.mib.firmware.current"
+          delay: "1h"
+          value_type: "CHAR"
+          trends: "0"
+          tags:
+            -
+              tag: "component"
+              value: "firmware"
+        -
+          uuid: "ce9d543ae3534af38cce3500743dbef9"
+          name: "UTM: New firmware version reported"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.1.2.8.0]"
+          key: "sp.mib.firmware.new"
+          delay: "2h"
+          value_type: "CHAR"
+          trends: "0"
+          tags:
+            -
+              tag: "component"
+              value: "firmware"
+        -
+          uuid: "0cff5a942dfb4a75873de08e913b45a7"
+          name: "UTM: License type"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.1.3.3.0]"
+          key: "sp.mib.license.type"
+          delay: "6h"
+          value_type: "CHAR"
+          trends: "0"
+          tags:
+            -
+              tag: "component"
+              value: "license"
+        -
+          uuid: "d49361a02e68478781d31ee6b7f1e3cd"
+          name: "UTM: Licensed maximum users"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.1.3.4.0]"
+          key: "sp.mib.license.users.max"
+          delay: "6h"
+          tags:
+            -
+              tag: "component"
+              value: "license"
+        -
+          uuid: "58e1ef5f20dd4eb2837587bd177dd518"
+          name: "UTM: License days remaining"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.1.3.5.0]"
+          key: "sp.mib.license.days"
+          delay: "6h"
+          units: "d"
+          tags:
+            -
+              tag: "component"
+              value: "license"
+          triggers:
+            -
+              uuid: "d3337f40b5fc4dc189d4c1ba513cfd5b"
+              name: "UTM: license under 30 days"
+              expression: "{$SP.LICENSE.ALERT}=1 and last(/Securepoint UTM Unified v5 by SNMP/sp.mib.license.days)<30 and last(/Securepoint UTM Unified v5 by SNMP/sp.mib.license.days)>=7"
+              priority: "WARNING"
+            -
+              uuid: "0d660ca6f668429187ef1954b9a33827"
+              name: "UTM: license under 7 days"
+              expression: "{$SP.LICENSE.ALERT}=1 and last(/Securepoint UTM Unified v5 by SNMP/sp.mib.license.days)<7"
+              priority: "HIGH"
+        -
+          uuid: "d6a0a6c81b6c42b78bbd42fef487daa5"
+          name: "UTM: Conntrack maximum"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.2.1.10.1.0]"
+          key: "sp.mib.conntrack.maximum"
+          delay: "3m"
+          tags:
+            -
+              tag: "component"
+              value: "conntrack"
+        -
+          uuid: "97e936e71ca349f086416995b5a23b4e"
+          name: "UTM: Conntrack current"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.2.1.10.2.0]"
+          key: "sp.mib.conntrack.current"
+          delay: "3m"
+          tags:
+            -
+              tag: "component"
+              value: "conntrack"
+          triggers:
+            -
+              uuid: "67f3f766781f476d8e8dfd3035b18aaf"
+              name: "UTM: conntrack over 85%"
+              expression: "{$SP.CONNTRACK.ALERT}=1 and last(/Securepoint UTM Unified v5 by SNMP/sp.mib.conntrack.maximum)>0 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.conntrack.current,10m)>0.85*last(/Securepoint UTM Unified v5 by SNMP/sp.mib.conntrack.maximum)"
+              priority: "WARNING"
+        -
+          uuid: "1217977f389e44be8d0c6ab5488995bc"
+          name: "OPTIONAL: HA cluster enabled"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.1.0]"
+          key: "sp.mib.ha.enabled"
+          delay: "10m"
+          status: "DISABLED"
+          valuemap:
+            name: "Securepoint cluster enabled (MIB)"
+          tags:
+            -
+              tag: "component"
+              value: "ha"
+        -
+          uuid: "aade5492f5a24fb98e30d13c89856273"
+          name: "OPTIONAL: HA priority"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.2.0]"
+          key: "sp.mib.ha.role"
+          delay: "10m"
+          value_type: "CHAR"
+          trends: "0"
+          status: "DISABLED"
+          tags:
+            -
+              tag: "component"
+              value: "ha"
+        -
+          uuid: "0efb357757df411689ed2a29ef6f6c08"
+          name: "OPTIONAL: HA state"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.3.0]"
+          key: "sp.mib.ha.state"
+          delay: "10m"
+          value_type: "CHAR"
+          trends: "0"
+          status: "DISABLED"
+          tags:
+            -
+              tag: "component"
+              value: "ha"
+        -
+          uuid: "48c63589ef1d4d3a8f852ed79ef152e0"
+          name: "OPTIONAL: HA sync state"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.4.0]"
+          key: "sp.mib.ha.sync"
+          delay: "10m"
+          value_type: "CHAR"
+          trends: "0"
+          status: "DISABLED"
+          tags:
+            -
+              tag: "component"
+              value: "ha"
+        -
+          uuid: "8ded1d95e09043a088617feb556305ce"
+          name: "OPTIONAL: HA maintenance"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.5.0]"
+          key: "sp.mib.ha.maintenance"
+          delay: "10m"
+          value_type: "CHAR"
+          trends: "0"
+          status: "DISABLED"
+          tags:
+            -
+              tag: "component"
+              value: "ha"
+        -
+          uuid: "4ed5cbf2bf0e497d80f1036c4df00477"
+          name: "OPTIONAL: Linux load 1m"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.2021.10.1.3.1]"
+          key: "sp.mib.linux.load1"
+          delay: "3m"
+          value_type: "FLOAT"
+          status: "DISABLED"
+          tags:
+            -
+              tag: "component"
+              value: "cpu"
+        -
+          uuid: "4ad5c5a6bb0e43318cf0fd2049effe2b"
+          name: "OPTIONAL: Linux load 5m"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.2021.10.1.3.2]"
+          key: "sp.mib.linux.load5"
+          delay: "3m"
+          value_type: "FLOAT"
+          status: "DISABLED"
+          tags:
+            -
+              tag: "component"
+              value: "cpu"
+        -
+          uuid: "e18fca450c144c588468451bf2d6b3e6"
+          name: "OPTIONAL: Linux load 15m"
+          type: "SNMP_AGENT"
+          snmp_oid: "get[1.3.6.1.4.1.2021.10.1.3.3]"
+          key: "sp.mib.linux.load15"
+          delay: "3m"
+          value_type: "FLOAT"
+          status: "DISABLED"
+          tags:
+            -
+              tag: "component"
+              value: "cpu"
+      - uuid: d1e6ec2dc4ce4851a191feb58aa9e949
+      name: 'System: physical RAM installed (KiB)'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.25.2.2.0]
+      key: sp.hr.ram.total_kib
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      units: KiB
+      tags:
+      - tag: component
+        value: memory
+    - uuid: ff8915d9268d4333a6155e8198c8849f
+      name: 'System: running process count'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.25.1.6.0]
+      key: sp.hr.proc.count
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      tags:
+      - tag: component
+        value: system
+    - uuid: cf55bb0686f74c5cacc8bbea428a87d4
+      name: 'System: logged in user count'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.25.1.5.0]
+      key: sp.hr.user.count
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      tags:
+      - tag: component
+        value: system
+    - uuid: e08cb090ae8a410ea512a1accc322416
+      name: 'TCP: established sessions'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.9.0]
+      key: sp.std.tcp.established
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      tags:
+      - tag: component
+        value: tcp
+    - uuid: 66e1e75e8aa64042a78b71befaa37b12
+      name: 'TCP: active connection opens per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.5.0]
+      key: sp.std.tcp.active_opens
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: tcp
+    - uuid: b6b10af94e6d46e3aa453a39399fe2c7
+      name: 'TCP: passive connection opens per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.6.0]
+      key: sp.std.tcp.passive_opens
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: tcp
+    - uuid: 6aef08e3c99e459fabd52e63ace2034f
+      name: 'TCP: failed connection attempts per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.7.0]
+      key: sp.std.tcp.failed
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: tcp
+    - uuid: cce42802b8794276a57a61066ed1a7ba
+      name: 'TCP: reset connections per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.8.0]
+      key: sp.std.tcp.resets
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: tcp
+    - uuid: 7e842ed0c5354bfaa0cdfbf0bf2f6dee
+      name: 'TCP: received segments per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.10.0]
+      key: sp.std.tcp.in_segments
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: tcp
+    - uuid: d902a6f5407f4771aa809c253ef34879
+      name: 'TCP: sent segments per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.11.0]
+      key: sp.std.tcp.out_segments
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: tcp
+    - uuid: 6a5fe97cb62a47aaa196cd98e3865722
+      name: 'TCP: retransmitted segments per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.12.0]
+      key: sp.std.tcp.retransmits
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: tcp
+    - uuid: 96483fd144fb4b9fa8a95779e1a2bbdb
+      name: 'TCP: input errors per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.6.14.0]
+      key: sp.std.tcp.in_errors
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: tcp
+    - uuid: 3a629b26c21641deabb6317e5f83809e
+      name: 'UDP: incoming packets per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.7.1.0]
+      key: sp.std.udp.in_datagrams
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: udp
+    - uuid: 114fd16517b54cb3a2518fe148e7d793
+      name: 'UDP: outgoing packets per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.7.4.0]
+      key: sp.std.udp.out_datagrams
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: udp
+    - uuid: 327610b996594503a76e90757eb2fd93
+      name: 'UDP: input errors per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.7.3.0]
+      key: sp.std.udp.in_errors
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: udp
+    - uuid: 1057812effb44c36acbb53027b74d1ea
+      name: 'UDP: packets to unopened ports per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.7.2.0]
+      key: sp.std.udp.no_ports
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: udp
+    - uuid: 2b1b7fc9eb4a4509a858a54d6f9c0bc5
+      name: 'IP: incoming discards per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.4.8.0]
+      key: sp.std.ip.in_discards
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: ip
+    - uuid: 2bae88389124474ea67232b4208f36be
+      name: 'IP: outgoing discards per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.4.11.0]
+      key: sp.std.ip.out_discards
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: ip
+    - uuid: 8e46bc4292e04c74a16c5bfebd4329fc
+      name: 'IP: packets without route per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.4.12.0]
+      key: sp.std.ip.out_no_route
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: ip
+    - uuid: 2896f2c51d6b4f01a9d36581de34367d
+      name: 'ICMP: incoming errors per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.5.2.0]
+      key: sp.std.icmp.in_errors
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: icmp
+    - uuid: fd727fc036b9440eaf389634aa530c96
+      name: 'ICMP: outgoing errors per second'
+      type: SNMP_AGENT
+      snmp_oid: get[1.3.6.1.2.1.5.15.0]
+      key: sp.std.icmp.out_errors
+      delay: 5m
+      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+      value_type: FLOAT
+      units: ops/s
+      preprocessing:
+      - type: CHANGE_PER_SECOND
+      tags:
+      - tag: component
+        value: icmp
+    discovery_rules:
+        -
+          uuid: "aa797e5135f14d5c8edd43c323ba4f26"
+          name: "Services discovery"
+          type: "SNMP_AGENT"
+          snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.1.1.1.2]"
+          key: "sp.mib.service.discovery"
+          delay: "1h"
+          item_prototypes:
+            -
+              uuid: "b534d49d55294bf888ae2783e649f62e"
+              name: "Service {#LABEL}: status"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.1.1.1.3.{#SNMPINDEX}]"
+              key: "sp.mib.service.status[{#SNMPINDEX}]"
+              delay: "5m"
+              valuemap:
+                name: "Securepoint application (MIB)"
+              tags:
+                -
+                  tag: "component"
+                  value: "service"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+              trigger_prototypes:
+                -
+                  uuid: "c68ea82a64cc488b886ff8bcfda73565"
+                  name: "UTM: required service {#LABEL} is down"
+                  expression: "{$SP.SERVICE.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.service.status[{#SNMPINDEX}],10m)=2"
+                  priority: "WARNING"
+            -
+              uuid: "7638c098a73c44ab8e04913e8c4f79c9"
+              name: "Service {#LABEL}: flags (raw)"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.1.1.1.4.{#SNMPINDEX}]"
+              key: "sp.mib.service.flags[{#SNMPINDEX}]"
+              delay: "15m"
+              description: "MIB appFlags; flags are NOT interpreted."
+              tags:
+                -
+                  tag: "component"
+                  value: "service"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+        -
+          uuid: "46ef2744bfa946e187d5ebee31d8c1cb"
+          name: "IPsec tunnels discovery"
+          type: "SNMP_AGENT"
+          snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.2.1.1.2]"
+          key: "sp.mib.ipsec.discovery"
+          delay: "1h"
+          item_prototypes:
+            -
+              uuid: "915017c6ed0746ef81f6ae94b88feda5"
+              name: "IPsec {#LABEL}: status"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.2.1.1.3.{#SNMPINDEX}]"
+              key: "sp.mib.ipsec.status[{#SNMPINDEX}]"
+              delay: "5m"
+              valuemap:
+                name: "Securepoint IPsec (MIB)"
+              tags:
+                -
+                  tag: "component"
+                  value: "ipsec"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+              trigger_prototypes:
+                -
+                  uuid: "591393b5b8f44b388a2668d7662dce7a"
+                  name: "UTM: required IPsec {#LABEL} is down"
+                  expression: "{$SP.IPSEC.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.ipsec.status[{#SNMPINDEX}],10m)=2"
+                  priority: "WARNING"
+            -
+              uuid: "c21180045c844da38adc0a6e5b8888c5"
+              name: "IPsec {#LABEL}: subnet count"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.2.1.1.4.{#SNMPINDEX}]"
+              key: "sp.mib.ipsec.subnets[{#SNMPINDEX}]"
+              delay: "15m"
+              tags:
+                -
+                  tag: "component"
+                  value: "ipsec"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+        -
+          uuid: "8a3b1da692af48838060dce8e3b2c1ed"
+          name: "OpenVPN profiles discovery"
+          type: "SNMP_AGENT"
+          snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.3.1.1.2]"
+          key: "sp.mib.openvpn.discovery"
+          delay: "1h"
+          item_prototypes:
+            -
+              uuid: "52f3c9c8c5fc43f18eeb36ceb6b3bfd7"
+              name: "OpenVPN {#LABEL}: status"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.3.1.1.3.{#SNMPINDEX}]"
+              key: "sp.mib.openvpn.status[{#SNMPINDEX}]"
+              delay: "5m"
+              valuemap:
+                name: "Securepoint OpenVPN (MIB)"
+              tags:
+                -
+                  tag: "component"
+                  value: "openvpn"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+            -
+              uuid: "6bd07cf0a5554da38395045e19c84de9"
+              name: "OpenVPN {#LABEL}: connected clients"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.3.1.1.4.{#SNMPINDEX}]"
+              key: "sp.mib.openvpn.clients[{#SNMPINDEX}]"
+              delay: "5m"
+              tags:
+                -
+                  tag: "component"
+                  value: "openvpn"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+          graph_prototypes:
+            -
+              uuid: "323e92d301d34b10850664b1ae65fc56"
+              name: "OpenVPN {#LABEL}: connected clients"
+              graph_items:
+                -
+                  sortorder: "0"
+                  color: "1A7D33"
+                  item:
+                    host: "Securepoint UTM Unified v5 by SNMP"
+                    key: "sp.mib.openvpn.clients[{#SNMPINDEX}]"
+        -
+          uuid: "b9bca0554c6843de8038d5afb6569360"
+          name: "Antivirus engines discovery"
+          type: "SNMP_AGENT"
+          snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.5.1.1.2]"
+          key: "sp.mib.av.discovery"
+          delay: "1h"
+          item_prototypes:
+            -
+              uuid: "a9ca263cb33e4b8389ba0ca694e80f25"
+              name: "Antivirus {#LABEL}: last pattern update"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.5.1.1.3.{#SNMPINDEX}]"
+              key: "sp.mib.av.lastupdate[{#SNMPINDEX}]"
+              delay: "30m"
+              value_type: "CHAR"
+              trends: "0"
+              tags:
+                -
+                  tag: "component"
+                  value: "antivirus"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+            -
+              uuid: "33f0a62c18da49d182d30522864b2707"
+              name: "Antivirus {#LABEL}: updater run"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.5.1.1.4.{#SNMPINDEX}]"
+              key: "sp.mib.av.lastrun[{#SNMPINDEX}]"
+              delay: "30m"
+              value_type: "CHAR"
+              trends: "0"
+              tags:
+                -
+                  tag: "component"
+                  value: "antivirus"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+            -
+              uuid: "ab22c7f437224b01834dceb222741a77"
+              name: "Antivirus {#LABEL}: update status"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.5.1.1.5.{#SNMPINDEX}]"
+              key: "sp.mib.av.state[{#SNMPINDEX}]"
+              delay: "10m"
+              valuemap:
+                name: "Securepoint antivirus update (MIB)"
+              tags:
+                -
+                  tag: "component"
+                  value: "antivirus"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+              trigger_prototypes:
+                -
+                  uuid: "9873b4efd10941ec8276f66934ffaebe"
+                  name: "UTM: antivirus {#LABEL} update failed"
+                  expression: "{$SP.AV.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.av.state[{#SNMPINDEX}],10m)=2"
+                  priority: "WARNING"
+        -
+          uuid: "056a4c6dfc0f45748c22a3df32fec256"
+          name: "WireGuard interfaces discovery"
+          type: "SNMP_AGENT"
+          snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.11.1.1.2]"
+          key: "sp.mib.wg.if.discovery"
+          delay: "1h"
+          item_prototypes:
+            -
+              uuid: "6a2c38ccc65a445b828209ee3cefb1bd"
+              name: "WireGuard {#LABEL}: tunnel name"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.1.1.3.{#SNMPINDEX}]"
+              key: "sp.mib.wg.interface.tunnelname[{#SNMPINDEX}]"
+              delay: "30m"
+              value_type: "CHAR"
+              trends: "0"
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+            -
+              uuid: "6a03c79f347e441882777fd50ce38876"
+              name: "WireGuard {#LABEL}: status"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.1.1.4.{#SNMPINDEX}]"
+              key: "sp.mib.wg.interface.status[{#SNMPINDEX}]"
+              delay: "5m"
+              valuemap:
+                name: "Securepoint WireGuard (MIB)"
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+              trigger_prototypes:
+                -
+                  uuid: "5d8355970a3a421881c20be5e0d5dd46"
+                  name: "UTM: required WireGuard interface {#LABEL} disconnected"
+                  expression: "{$SP.WG.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.wg.interface.status[{#SNMPINDEX}],10m)=0"
+                  priority: "WARNING"
+            -
+              uuid: "7dc79982d0ad410d8c1273d84c84ba53"
+              name: "WireGuard {#LABEL}: UDP listen port"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.1.1.6.{#SNMPINDEX}]"
+              key: "sp.mib.wg.interface.port[{#SNMPINDEX}]"
+              delay: "30m"
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+            -
+              uuid: "44845869057e48ba8aaf69c35e4b7eb4"
+              name: "WireGuard {#LABEL}: peer count"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.1.1.7.{#SNMPINDEX}]"
+              key: "sp.mib.wg.interface.peer_count[{#SNMPINDEX}]"
+              delay: "10m"
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+        -
+          uuid: "678adc4a044a493780a80bac46faac59"
+          name: "WireGuard peers discovery"
+          type: "SNMP_AGENT"
+          snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.11.2.1.2]"
+          key: "sp.mib.wg.peer.discovery"
+          delay: "30m"
+          item_prototypes:
+            -
+              uuid: "cdfa938c438b4fed89ea375ac26d2ec3"
+              name: "WireGuard peer {#LABEL}: status"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.2.1.3.{#SNMPINDEX}]"
+              key: "sp.mib.wg.peer.status[{#SNMPINDEX}]"
+              delay: "5m"
+              valuemap:
+                name: "Securepoint WireGuard (MIB)"
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+              trigger_prototypes:
+                -
+                  uuid: "bc6d3a5c4bd04c2980791faa0f5a3dcf"
+                  name: "UTM: required WireGuard peer {#LABEL} disconnected"
+                  expression: "{$SP.WG.PEER.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.wg.peer.status[{#SNMPINDEX}],10m)=0"
+                  priority: "WARNING"
+            -
+              uuid: "27839d2952e14d268df7a4578a51e48c"
+              name: "WireGuard peer {#LABEL}: last handshake (RAW)"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.2.1.6.{#SNMPINDEX}]"
+              key: "sp.mib.wg.peer.handshake[{#SNMPINDEX}]"
+              delay: "5m"
+              description: "MIB identifies last handshake but does not specify epoch or unit. No age trigger."
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+            -
+              uuid: "2429a6af8fee404e849d466114a2dee8"
+              name: "WireGuard peer {#LABEL}: sent bytes"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.2.1.7.{#SNMPINDEX}]"
+              key: "sp.mib.wg.peer.bytes.sent[{#SNMPINDEX}]"
+              delay: "3m"
+              units: "B"
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+            -
+              uuid: "5fb2e6fa34eb4e538f7f7600f3b5b689"
+              name: "WireGuard peer {#LABEL}: received bytes"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.2.1.8.{#SNMPINDEX}]"
+              key: "sp.mib.wg.peer.bytes.received[{#SNMPINDEX}]"
+              delay: "3m"
+              units: "B"
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+            -
+              uuid: "1368651f67d84bc682d030f957bbf850"
+              name: "WireGuard peer {#LABEL}: sent B/s"
+              type: "DEPENDENT"
+              key: "sp.mib.wg.peer.bps.sent[{#SNMPINDEX}]"
+              value_type: "FLOAT"
+              units: "Bps"
+              master_item:
+                key: "sp.mib.wg.peer.bytes.sent[{#SNMPINDEX}]"
+              preprocessing:
+                -
+                  type: "CHANGE_PER_SECOND"
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+            -
+              uuid: "e973232a2db14a6b8e6764388fa98e51"
+              name: "WireGuard peer {#LABEL}: received B/s"
+              type: "DEPENDENT"
+              key: "sp.mib.wg.peer.bps.received[{#SNMPINDEX}]"
+              value_type: "FLOAT"
+              units: "Bps"
+              master_item:
+                key: "sp.mib.wg.peer.bytes.received[{#SNMPINDEX}]"
+              preprocessing:
+                -
+                  type: "CHANGE_PER_SECOND"
+              tags:
+                -
+                  tag: "component"
+                  value: "wireguard"
+          graph_prototypes:
+            -
+              uuid: "69cd62b2295d405d8d4389a48af709e7"
+              name: "WireGuard {#LABEL}: B/s"
+              graph_items:
+                -
+                  sortorder: "0"
+                  color: "1A7D33"
+                  item:
+                    host: "Securepoint UTM Unified v5 by SNMP"
+                    key: "sp.mib.wg.peer.bps.sent[{#SNMPINDEX}]"
+                -
+                  sortorder: "1"
+                  color: "CB4B16"
+                  item:
+                    host: "Securepoint UTM Unified v5 by SNMP"
+                    key: "sp.mib.wg.peer.bps.received[{#SNMPINDEX}]"
+        -
+          uuid: "0bf6cf0fd9624cd083a34465fb589e36"
+          name: "OPTIONAL: IPsec subnets discovery"
+          type: "SNMP_AGENT"
+          snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.2.2.1.6]"
+          key: "sp.mib.ipsec.subnet.discovery"
+          delay: "1h"
+          item_prototypes:
+            -
+              uuid: "7790f3ed7ecc4ee68704fa3f5903e1d0"
+              name: "IPsec subnet {#SNMPINDEX}: status"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.2.2.1.6.{#SNMPINDEX}]"
+              key: "sp.mib.ipsec.subnet.status[{#SNMPINDEX}]"
+              delay: "5m"
+              valuemap:
+                name: "Securepoint IPsec (MIB)"
+              tags:
+                -
+                  tag: "component"
+                  value: "ipsec"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+          status: "DISABLED"
+          description: "Nested table, disabled pending real SNMP verification."
+        -
+          uuid: "269aa7bc32714967816637b669343f51"
+          name: "OPTIONAL: backup inventory"
+          type: "SNMP_AGENT"
+          snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.6.1.1.2]"
+          key: "sp.mib.backup.discovery"
+          delay: "12h"
+          item_prototypes:
+            -
+              uuid: "7653076e15624dd985683c1445db92d7"
+              name: "Backup {#LABEL}: date"
+              type: "SNMP_AGENT"
+              snmp_oid: "get[1.3.6.1.4.1.28553.2.1.6.1.1.3.{#SNMPINDEX}]"
+              key: "sp.mib.backup.date[{#SNMPINDEX}]"
+              delay: "12h"
+              value_type: "CHAR"
+              trends: "0"
+              tags:
+                -
+                  tag: "component"
+                  value: "backup"
+                -
+                  tag: "name"
+                  value: "{#LABEL}"
+          status: "DISABLED"
+      - uuid: 3ad85894b8844d9aaca46b28ba17390a
+      name: 'OPTIONAL: HOST-RESOURCES per-core CPU'
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#CPULOAD},1.3.6.1.2.1.25.3.3.1.2]
+      key: sp.std.cpu.discovery
+      delay: 1h
+      status: DISABLED
+      description: Narrow per-core CPU discovery; not the problematic hrDevice and hrStorage inventories. Enable only after testing.
+      item_prototypes:
+      - uuid: 46427e0a7c684390a398395675d29fd8
+        name: 'CPU {#SNMPINDEX}: utilisation'
+        type: SNMP_AGENT
+        snmp_oid: get[1.3.6.1.2.1.25.3.3.1.2.{#SNMPINDEX}]
+        key: sp.std.cpu.util[{#SNMPINDEX}]
+        delay: 3m
+        units: '%'
+        tags:
+        - tag: component
+          value: cpu
+      graph_prototypes:
+      - uuid: c01616e0e07c479aa1f24fdca97bab82
+        name: 'CPU {#SNMPINDEX}: utilisation'
+        graph_items:
+        - sortorder: '0'
+          color: 199C0D
+          item:
+            host: Securepoint UTM Unified v5 by SNMP
+            key: sp.std.cpu.util[{#SNMPINDEX}]
+    macros:
+        -
+          macro: "{$SP.SERVICE.ALERT}"
+          value: "0"
+          description: "Opt-in only after testing live OID and expected always-on behavior."
+        -
+          macro: "{$SP.IPSEC.ALERT}"
+          value: "0"
+          description: "Opt-in only after testing live OID and expected always-on behavior."
+        -
+          macro: "{$SP.AV.ALERT}"
+          value: "0"
+          description: "Opt-in only after testing live OID and expected always-on behavior."
+        -
+          macro: "{$SP.WG.ALERT}"
+          value: "0"
+          description: "Opt-in only after testing live OID and expected always-on behavior."
+        -
+          macro: "{$SP.WG.PEER.ALERT}"
+          value: "0"
+          description: "Opt-in only after testing live OID and expected always-on behavior."
+        -
+          macro: "{$SP.LICENSE.ALERT}"
+          value: "0"
+          description: "Opt-in only after testing live OID and expected always-on behavior."
+        -
+          macro: "{$SP.CONNTRACK.ALERT}"
+          value: "0"
+          description: "Opt-in only after testing live OID and expected always-on behavior."
+      valuemaps:
+        -
+          uuid: "a04b8e5c1e5e4d89887811f603c18ae3"
+          name: "Securepoint application (MIB)"
+          mappings:
+            -
+              value: "1"
+              newvalue: "Up / running"
+            -
+              value: "2"
+              newvalue: "Down"
+            -
+              value: "3"
+              newvalue: "Starting"
+            -
+              value: "4"
+              newvalue: "Error"
+            -
+              value: "5"
+              newvalue: "Running but should be down"
+            -
+              value: "6"
+              newvalue: "Down but should be up"
+            -
+              value: "7"
+              newvalue: "Not configured"
+            -
+              value: "8"
+              newvalue: "Disabled"
+            -
+              value: "9"
+              newvalue: "No such service"
+        -
+          uuid: "bf9080bc8971473188da78ba590aae9f"
+          name: "Securepoint IPsec (MIB)"
+          mappings:
+            -
+              value: "0"
+              newvalue: "Unknown"
+            -
+              value: "1"
+              newvalue: "Up"
+            -
+              value: "2"
+              newvalue: "Down"
+        -
+          uuid: "0f1035929e2043c78097399888330805"
+          name: "Securepoint OpenVPN (MIB)"
+          mappings:
+            -
+              value: "1"
+              newvalue: "Connecting"
+            -
+              value: "2"
+              newvalue: "Assigning IP"
+            -
+              value: "3"
+              newvalue: "Adding routes"
+            -
+              value: "4"
+              newvalue: "Connected"
+            -
+              value: "5"
+              newvalue: "Reconnecting"
+            -
+              value: "6"
+              newvalue: "Exiting"
+            -
+              value: "7"
+              newvalue: "Unknown / query error"
+        -
+          uuid: "0d032018afee47f18ac3615ee5929fb7"
+          name: "Securepoint WireGuard (MIB)"
+          mappings:
+            -
+              value: "0"
+              newvalue: "Disconnected"
+            -
+              value: "1"
+              newvalue: "Connected"
+            -
+              value: "2"
+              newvalue: "Unknown"
+            -
+              value: "3"
+              newvalue: "Deleted"
+        -
+          uuid: "e77edcee443d42818d4656c8885569eb"
+          name: "Securepoint antivirus update (MIB)"
+          mappings:
+            -
+              value: "1"
+              newvalue: "OK"
+            -
+              value: "2"
+              newvalue: "Failed"
+            -
+              value: "3"
+              newvalue: "In progress"
+        -
+          uuid: "b1ee8935bd6245b48612e417989301ce"
+          name: "Securepoint cluster enabled (MIB)"
+          mappings:
+            -
+              value: "0"
+              newvalue: "Disabled"
+            -
+              value: "1"
+              newvalue: "Enabled"
+  graphs:
+    -
+      uuid: "c9f21c8ba8db423688d940cd1308fc38"
+      name: "Securepoint conntrack current vs max"
+      graph_items:
+        -
+          sortorder: "0"
+          color: "1A7D33"
+          item:
+            host: "Securepoint UTM Unified v5 by SNMP"
+            key: "sp.mib.conntrack.current"
+        -
+          sortorder: "1"
+          color: "CB4B16"
+          item:
+            host: "Securepoint UTM Unified v5 by SNMP"
+            key: "sp.mib.conntrack.maximum"
+    -
+      uuid: "7b75fd10c26c49898c14ab7ea9b89e6f"
+      name: "Securepoint license days"
+      graph_items:
+        -
+          sortorder: "0"
+          color: "1A7D33"
+          item:
+            host: "Securepoint UTM Unified v5 by SNMP"
+            key: "sp.mib.license.days"
+  - uuid: 7bb83c7f27b24a05a6875e37f745c9d9
+    name: 'Securepoint: established TCP sessions'
+    graph_items:
+    - sortorder: '0'
+      color: 1A7D33
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.tcp.established
+  - uuid: d26c9b080102479ca5244b78842b642c
+    name: 'Securepoint: TCP opens and failures per second'
+    graph_items:
+    - sortorder: '0'
+      color: 1A7D33
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.tcp.active_opens
+    - sortorder: '1'
+      color: CB4B16
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.tcp.failed
+  - uuid: acb9aa4314a74f9fad6f1a53b73f3397
+    name: 'Securepoint: TCP retransmissions and errors per second'
+    graph_items:
+    - sortorder: '0'
+      color: 1A7D33
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.tcp.retransmits
+    - sortorder: '1'
+      color: CB4B16
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.tcp.in_errors
+  - uuid: d32bbf5a958147e4abfb3e6e2453047c
+    name: 'Securepoint: UDP packets per second'
+    graph_items:
+    - sortorder: '0'
+      color: 1A7D33
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.udp.in_datagrams
+    - sortorder: '1'
+      color: CB4B16
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.udp.out_datagrams
+  - uuid: 61184f88a55844d0ac4a8694d5eee884
+    name: 'Securepoint: UDP errors per second'
+    graph_items:
+    - sortorder: '0'
+      color: 1A7D33
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.udp.in_errors
+    - sortorder: '1'
+      color: CB4B16
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.udp.no_ports
+  - uuid: de55fe255a4d4271a17e4481fde2d2ad
+    name: 'Securepoint: IP discards and routing misses per second'
+    graph_items:
+    - sortorder: '0'
+      color: 1A7D33
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.ip.in_discards
+    - sortorder: '1'
+      color: CB4B16
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.ip.out_discards
+    - sortorder: '2'
+      color: 199C0D
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.std.ip.out_no_route
+  - uuid: df797ad24767498ead7bd22a4570f49e
+    name: 'Securepoint: process and user counts'
+    graph_items:
+    - sortorder: '0'
+      color: 1A7D33
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.hr.proc.count
+    - sortorder: '1'
+      color: CB4B16
+      item:
+        host: Securepoint UTM Unified v5 by SNMP
+        key: sp.hr.user.count
