@@ -9,7 +9,17 @@ Community-maintained, **experimental** monitoring template for Securepoint NextG
 > [!WARNING]
 > This is a test-stage project. The OID names, table definitions and enumerations were cross-checked against Securepoint's official MIB modules (2025-05-27), **but an MIB is not proof that an OID exists on every device/firmware**. This template has not yet passed a live-device acceptance test. Do **not** replace your production template without testing.
 
-## Unified v5 candidate (development branch)
+## Latest development candidate — v5.5 (interfaces)
+
+**[Download v5.5 YAML](templates/securepoint-utm-unified-v5.5-interfaces.yaml)** · [Interface monitoring & dashboard removal notes](docs/V5_5_INTERFACES.md) · [Russian installation notes](docs/README_RU.md).
+
+The new **Interfaces** page in **Securepoint UTM | Command Center** lists all discovered LAN/WAN/VLAN/WireGuard/other eligible interfaces at once with operational/admin status, link speed, RX/TX, input/output errors and discards. Graph carousels remain available for in-depth traffic and packet-error analysis. The earlier firmware/license notification feature from v5.4 is retained.
+
+The separate **Network interfaces** host dashboard comes from the inherited **Network Generic Device by SNMP** template. It cannot be removed just by editing this child dashboard. **Do not unlink-and-clear the generic template**: see [safe alternatives and shared-host impact](docs/V5_5_INTERFACES.md).
+
+**Status:** experimental; CI checks structure and cannot prove device SNMP support or successful Zabbix 8.0 import. Keep `Delete missing` off on first import.
+
+## Legacy v5 design (development branch)
 
 **Recommended next version:** [Unified v5 YAML](templates/securepoint-utm-unified-v5.yaml) — combines official Securepoint MIB status monitoring with curated standard SNMP TCP/UDP/IP/ICMP, process/RAM metrics and graphs. This is a **release candidate, not a validated production template**. The v4 file remains in the repository for comparison and rollback.
 
