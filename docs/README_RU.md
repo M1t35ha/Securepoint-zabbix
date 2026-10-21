@@ -1,5 +1,12 @@
 # Securepoint → Zabbix: инструкция на русском
 
+## Актуальная тестовая версия: v5.2 (Dashboard)
+
+[**YAML v5.2**](../templates/securepoint-utm-unified-v5.2-dashboard.yaml) · [Исправления и проверка SNMP](V5_2_DASHBOARD.md)
+
+На скриншотах реальной UTM мы увидели работающие CPU, RAM, uptime, TCP и UDP; но не получали данные firmware, лицензии, Conntrack и HA. В v5.2 исправлены фирменные OID без суффикса `.0` (по старому шаблону и опубликованным SNMP-примерам Securepoint), переработаны вкладки Overview / Network / VPN & Security, добавлен компактный IF-MIB LLD для отображения трафика интерфейсов в Dashboard. Результат надо подтвердить реальным опросом. **Не удаляйте старый шаблон и историю; Delete missing выключить.**
+
+
 ## Единый шаблон v5 — кандидат, ещё не для продакшена
 
 [Скачать YAML из GitHub](../templates/securepoint-utm-unified-v5.yaml) · [Архитектура](V5_DESIGN.md) · [Обзор чужих решений](COMMUNITY_RESEARCH.md) · [Проверки](TESTING.md)
