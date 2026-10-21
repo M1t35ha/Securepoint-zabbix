@@ -178,10 +178,31 @@ def check(path: Path) -> list[str]:
             vmap_names = {m.get("name") for m in template.get("valuemaps", [])}
             if not {"Securepoint interface operational status", "Securepoint interface administrative status"}.issubset(vmap_names):
                 errors.append("v5.5: missing interface state value maps")
+        if path.name.endswith("standalone-v5.6.yaml"):
+            if template.get("templates"):
+                errors.append("Standalone v5.6 must have zero linked parent templates")
+            if template.get("template") != "Securepoint UTM Standalone v5.6 by SNMP":
+                errors.append("Standalone v5.6 missing separate technical template identity")
+            needed = {"sp.dashboard.uptime", "sp.core.snmp.uptime", "sp.core.system.objectid"}
+            if not needed.issubset(regular):
+                errors.append(f"Standalone v5.6 system Items missing: {needed - regular}")
+            iface = next((r for r in rules if r.get("key") == "sp.dashboard.interface.discovery"), None)
+            if not iface or len(iface.get("item_prototypes", [])) < 9 or len(iface.get("graph_prototypes", [])) != 2:
+                errors.append("Standalone v5.6 lacks own IF-MIB monitoring")
+            else:
+                operative = next((p for p in iface["item_prototypes"] if p.get("key","").startswith("sp.dashboard.interface.oper.status")), {})
+                if not operative.get("trigger_prototypes"):
+                    errors.append("Standalone v5.6 missing opt-in IF link-state trigger")
+            upitem = next((i for i in items if i.get("key") == "sp.dashboard.uptime"), {})
+            if not any("nodata(" in t.get("expression","") for t in upitem.get("triggers", [])):
+                errors.append("Standalone v5.6 missing SNMP no-data alert")
+            pages = [p.get("name") for d in template.get("dashboards",[]) for p in d.get("pages", [])]
+            if pages != ["Overview", "Network", "Interfaces", "VPN & Security"]:
+                errors.append(f"Standalone v5.6 missing dashboard pages: {pages}")
         alerts = {m.get("macro"): m.get("value") for m in template.get("macros", [])}
         for macro, value in alerts.items():
-            enabled_for_v54 = path.name in {"securepoint-utm-unified-v5.4-firmware-license.yaml", "securepoint-utm-unified-v5.5-interfaces.yaml"} and macro in {"{$SP.FIRMWARE.ALERT}", "{$SP.LICENSE.ALERT}"}
-            if macro and macro.endswith(".ALERT}") and value != "0" and not enabled_for_v54:
+            enabled_for_v54 = path.name in {"securepoint-utm-unified-v5.4-firmware-license.yaml", "securepoint-utm-unified-v5.5-interfaces.yaml", "securepoint-utm-standalone-v5.6.yaml"} and macro in {"{$SP.FIRMWARE.ALERT}", "{$SP.LICENSE.ALERT}"}
+            if macro and macro.endswith(".ALERT}") and value != "0" and not enabled_for_v54 and not (path.name.endswith("standalone-v5.6.yaml") and macro == "{$SP.SNMP.NODATA.ALERT}"):
                 errors.append(f"Alert macro not off by default: {macro}")
         if not all_keys:
             errors.append(f"Template {name} has no keys")
