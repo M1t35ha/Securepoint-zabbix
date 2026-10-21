@@ -1,53 +1,48 @@
-# Roadmap
+# Roadmap — Securepoint Zabbix
 
-## Unified v5 candidate (2026-10-21)
+**Current baseline:** `v1.0.0-rc.1` → `templates/securepoint-utm-standalone-v5.6.yaml`. Updated **2026-10-21** from observed live Zabbix screens and CI results.
 
-- [x] Research community IPsec/WireGuard implementations and Zabbix SNMP template practices.
-- [x] Combine manufacturer-MIB v4 with selected operational standard counters from v3.
-- [x] Restore network diagnostics and graphs without hrStorage/hrDevice discovery.
-- [x] Optional CPU discovery; per-service and per-tunnel alerts opt-in.
-- [x] Document included/excluded capabilities, provenance, privacy and a test plan.
-- [ ] Pass offline CI for v5 **and** v4.
-- [ ] Confirm import in Zabbix 8.0 test host.
-- [ ] Verify every vendor OID and optional table on firmware 14.x via sanitized snmpwalk.
-- [ ] Compare semantics and graphs against firewall GUI.
-- [ ] Only then mark release `v5.0.0` and consider production migration.
+This tracks **current decisions**, not every historic iteration. See [CHANGELOG](../CHANGELOG.md) for the project history and [RC1 report](RELEASE_CANDIDATE_1.md) for evidence.
 
+## Complete / demonstrated on the initial test device
 
-This is a prioritized engineering plan, **not** a claim of current support.
+- [x] Independent Securepoint SNMP template: no linked generic template; imported and linked on Zabbix 8.0 RC.
+- [x] Four-page standalone Host Dashboard.
+- [x] Targeted IF-MIB LLD: six discovered interfaces, operating/admin status and link speeds.
+- [x] 64-bit receive/transmit counter rates and graph history; error and discard counter rates and graphs.
+- [x] CPU, RAM, uptime, processes and standard TCP/UDP/IP counters.
+- [x] Manufacturer firmware current/available version Items; firmware mismatch Problem appears.
+- [x] Manufacturer license type and remaining-day Items respond (90 days during test).
+- [x] WireGuard peer `Disconnected (0)` mapped correctly as an SNMP value (not yet verified against a live connection transition).
+- [x] No broad `hrStorage` or `hrDevice` discovery; offline YAML/UUID/reference CI checks and sanitized SNMPwalk helper.
+- [x] Standalone migration documentation and reproducible RC1 branch/PR.
 
-- [x] Establish public repository, template location and documentation.
-- [x] Add MIB-derived status maps and conservative six active / two optional discoveries.
-- [x] Guard against repeating broad hrStorage/hrDevice discovery and zero-denominator swap formulas.
-- [ ] Confirm successful import on Zabbix 8.0 RC/build.
-- [ ] Record a sanitized, device-verified capability matrix for UTM 14.x.
-- [ ] Verify WireGuard last-handshake time representation; add last-handshake age only after verification.
-- [ ] Verify peer traffic counters and reset behavior; improve per-peer graphs.
-- [ ] Add per-VPN/service dashboard with operational status, uptime and current sessions.
-- [ ] Validate HA, IPsec subnet and backup optional data on appropriate devices.
-- [ ] Add cautious, context-macro controlled alerts for required IPsec and WireGuard peers.
-- [ ] Evaluate non-SNMP data via supported API/syslog sources, with read-only scope and privacy review.
-- [ ] Add a genuine Zabbix 8.0 import smoke test to CI using an isolated container; offline YAML validation alone is not sufficient.
+## P0 — blocking stable v1.0.0
 
-## Engineering rules
+- [ ] Audit *Not supported* Items and LLD stability after at least 24 hours; record sanitized keys and the target firmware/build.
+- [ ] Test **active WireGuard peer**: connect/disconnect, last handshake units, sent/received counter directions and accurate state transitions.
+- [ ] Validate IPsec/OpenVPN/services/antivirus against the UTM GUI where features are enabled. Inactive features should not generate false failures.
+- [ ] Exercise firmware trigger **recovery** safely after a legitimate update; string inequality is not semantic version comparison.
+- [ ] Test license thresholds at 30, 7 and 0 days in an isolated Zabbix test environment; verify special/unlimited license semantics.
+- [ ] Test SNMP no-data and opt-in critical-interface link-down alarm/recovery without disrupting a production firewall.
+- [ ] Confirm Zabbix Actions + Media deliver notifications to intended recipients, not merely create Problems.
+- [ ] Review persistent nonzero LAN packet discards and polling cost before alert thresholds.
 
-Every new OID must have a documented type, an explicitly stated source (MIB/standard MIB/live observation), evidence of support on tested firmware, stable discovery indexing and a safe failure mode. Every new alert must explain whether the device might be intentionally offline.
+## P1 — hardening and multi-device compatibility
 
-## v5.5 interface support (2026-10-21)
+- [ ] Test on additional Securepoint firmware builds, hardware and virtual UTM, and differing VPN/license configurations.
+- [ ] Record capability matrix: numeric OID, data type, firmware availability, observed values, test status.
+- [ ] Add isolated **real Zabbix importer smoke test** to CI; YAML validation alone is insufficient.
+- [ ] Introduce selective triggers for always-on VPN/services only after the state semantics are verified.
+- [ ] Improve version comparison if manufacturer reports update/channel information sufficient to prove ordering.
+- [ ] Decide and document public project license with repository owner approval.
 
-- [x] Add status, link speed, errors and discards to bounded IF-MIB discovery.
-- [x] Dedicated **Interfaces** page listing all discovered devices at once; traffic and error graph prototypes remain selectable.
-- [x] Preserve vendor VPN/firmware/license features and official generic SNMP parent.
-- [x] Document the inherited **Network interfaces** dashboard limitation and safe removal options.
-- [ ] Confirm all interface statuses and rates on actual Securepoint 14.x firmware.
-- [ ] If only Firewall should hide the parent dashboard, trial a detached/clone approach on a separate host; do not remove generic monitoring without checking macros and history.
+## P2 — optional expansion
 
-## v5.6 Standalone (2026-10-21)
+- [ ] Validate HA, IPsec subnet and backup inventory on a device exposing those features.
+- [ ] Consider authenticated read-only API or syslog integration as a separate, privacy-reviewed module.
+- [ ] Evaluate aggregate traffic dashboard and better interface grouping once LLD support is proven across devices.
 
-- [x] Build separate standalone YAML with NO generic SNMP template inheritance.
-- [x] Preserve own IF-MIB discovery, all four dashboard pages, and Securepoint VPN/license/firmware Items.
-- [x] Add self-monitoring of missing SNMP data and opt-in critical interface link-down alerts.
-- [x] Write migration/rollback guide, including two-step Unlink and clear and history-loss warning.
-- [ ] Complete live import and Zabbix 8.0 host acceptance.
-- [ ] Confirm interface discovery, status, link speed and missing SNMP OIDs against Securepoint GUI.
-- [ ] Verify firmware/license vendor fields and alert routing to email/Teams before rolling out.
+## Rules
+
+Every new item needs evidence of its SNMP OID/type and index, every alert a conservative failure mode, and every feature report a distinction between **defined in MIB**, **Zabbix imported**, **observed data**, and **behavior tested**. Keep the vendor MIB binaries, credentials, raw SNMP walks, license identifiers and customer details out of Git.
