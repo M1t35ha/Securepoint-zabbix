@@ -1248,7 +1248,8 @@ zabbix_export:
           color: 42A5F5
           item:
             host: Securepoint UTM Unified v5 by SNMP
-            key: sp.dashboard.interface.out.bps[{#SNMPINDEX}]      - uuid: df9b586c1c3a4c14a162fad436f7ac24
+            key: sp.dashboard.interface.out.bps[{#SNMPINDEX}]
+      - uuid: df9b586c1c3a4c14a162fad436f7ac24
         name: 'Interfaces: {#IFNAME} errors and discards (packets/s)'
         graph_items:
         - sortorder: '0'
