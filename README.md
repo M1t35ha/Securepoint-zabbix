@@ -64,4 +64,4 @@ See [Roadmap](docs/ROADMAP.md). Priority is to establish a known-good device-spe
 
 Contributions and sanitized test reports are welcome via GitHub Issues and PRs. Do not post SNMP secrets, public IP addresses, account names or client-specific tunnel names.
 
-> Latest experimental improvements (all-interface monitoring and four-tab dashboard) are under review in [PR #5](https://github.com/M1t35ha/Securepoint-zabbix/pull/5). The README in that branch contains the latest test instructions; main still ships the conservative reference template.
+> Latest experimental work: **Standalone Securepoint UTM v5.6**, with **no dependency on Network Generic Device by SNMP**, is under review in [PR #5](https://github.com/M1t35ha/Securepoint-zabbix/pull/5). See the [standalone YAML](https://github.com/M1t35ha/Securepoint-zabbix/blob/feature/utm-v5-unified/templates/securepoint-utm-standalone-v5.6.yaml) and [migration guide](https://github.com/M1t35ha/Securepoint-zabbix/blob/feature/utm-v5-unified/docs/V5_6_STANDALONE.md). It is test-stage; main keeps the conservative reference template.
