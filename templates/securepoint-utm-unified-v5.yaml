@@ -251,7 +251,7 @@ zabbix_export:
             -
               tag: "component"
               value: "cpu"
-      - uuid: d1e6ec2dc4ce4851a191feb58aa9e949
+        - uuid: d1e6ec2dc4ce4851a191feb58aa9e949
           name: 'System: physical RAM installed (KiB)'
           type: SNMP_AGENT
           snmp_oid: get[1.3.6.1.2.1.25.2.2.0]
@@ -980,34 +980,34 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
           status: "DISABLED"
-      - uuid: 3ad85894b8844d9aaca46b28ba17390a
-          name: 'OPTIONAL: HOST-RESOURCES per-core CPU'
+        - uuid: 3ad85894b8844d9aaca46b28ba17390a
+          name: 'OPTIONAL: per-core CPU discovery'
           type: SNMP_AGENT
           snmp_oid: discovery[{#CPULOAD},1.3.6.1.2.1.25.3.3.1.2]
           key: sp.std.cpu.discovery
           delay: 1h
           status: DISABLED
-          description: Narrow per-core CPU discovery; not the problematic hrDevice and hrStorage inventories. Enable only after testing.
+          description: Narrow hrProcessorLoad discovery only; enable after live query.
           item_prototypes:
-        - uuid: 46427e0a7c684390a398395675d29fd8
-            name: 'CPU {#SNMPINDEX}: utilisation'
-            type: SNMP_AGENT
-            snmp_oid: get[1.3.6.1.2.1.25.3.3.1.2.{#SNMPINDEX}]
-            key: sp.std.cpu.util[{#SNMPINDEX}]
-            delay: 3m
-            units: '%'
-            tags:
-            - tag: component
-              value: cpu
+            - uuid: 46427e0a7c684390a398395675d29fd8
+              name: 'CPU {#SNMPINDEX}: utilisation'
+              type: SNMP_AGENT
+              snmp_oid: get[1.3.6.1.2.1.25.3.3.1.2.{#SNMPINDEX}]
+              key: sp.std.cpu.util[{#SNMPINDEX}]
+              delay: 3m
+              units: '%'
+              tags:
+                - tag: component
+                  value: cpu
           graph_prototypes:
-        - uuid: c01616e0e07c479aa1f24fdca97bab82
-            name: 'CPU {#SNMPINDEX}: utilisation'
-            graph_items:
-            - sortorder: '0'
-              color: 199C0D
-              item:
-                host: Securepoint UTM Unified v5 by SNMP
-                key: sp.std.cpu.util[{#SNMPINDEX}]
+            - uuid: c01616e0e07c479aa1f24fdca97bab82
+              name: 'CPU {#SNMPINDEX}: utilisation'
+              graph_items:
+                - sortorder: '0'
+                  color: 199C0D
+                  item:
+                    host: Securepoint UTM Unified v5 by SNMP
+                    key: sp.std.cpu.util[{#SNMPINDEX}]
       macros:
         -
           macro: "{$SP.SERVICE.ALERT}"
