@@ -1,7 +1,9 @@
-name: Template validation
+name: Securepoint RC validation
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'release/**'
   pull_request:
 permissions:
   contents: read
@@ -13,17 +15,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install validation requirements
+      - name: Install test requirements
         run: python -m pip install -r requirements-dev.txt
-      - name: Offline structural validation
-        run: |
-          python tools/validate_template.py templates/securepoint-utm-mib-v4.yaml
-          python tools/validate_template.py templates/securepoint-utm-unified-v5.yaml
-          python tools/validate_template.py templates/securepoint-utm-unified-v5.1-dashboard.yaml
-          python tools/validate_template.py templates/securepoint-utm-unified-v5.2-dashboard.yaml
-          python tools/validate_template.py templates/securepoint-utm-unified-v5.3-dashboard.yaml
-          python tools/validate_template.py templates/securepoint-utm-unified-v5.4-firmware-license.yaml
-          python tools/validate_template.py templates/securepoint-utm-unified-v5.5-interfaces.yaml
-          python tools/validate_template.py templates/securepoint-utm-standalone-v5.6.yaml
-      - name: Offline SNMPwalk parser tests (no device required)
+      - name: Validate the only supported RC template
+        run: python tools/validate_template.py templates/securepoint-utm-standalone-v5.6.yaml
+      - name: Test privacy-preserving SNMPwalk analyzer
         run: python -m unittest discover -s tests -v
+      - name: Check current documentation links
+        run: python tools/check_docs.py
