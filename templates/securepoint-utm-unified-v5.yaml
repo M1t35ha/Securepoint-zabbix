@@ -252,285 +252,285 @@ zabbix_export:
               tag: "component"
               value: "cpu"
       - uuid: d1e6ec2dc4ce4851a191feb58aa9e949
-      name: 'System: physical RAM installed (KiB)'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.25.2.2.0]
-      key: sp.hr.ram.total_kib
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      units: KiB
-      tags:
-      - tag: component
-        value: memory
-    - uuid: ff8915d9268d4333a6155e8198c8849f
-      name: 'System: running process count'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.25.1.6.0]
-      key: sp.hr.proc.count
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      tags:
-      - tag: component
-        value: system
-    - uuid: cf55bb0686f74c5cacc8bbea428a87d4
-      name: 'System: logged in user count'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.25.1.5.0]
-      key: sp.hr.user.count
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      tags:
-      - tag: component
-        value: system
-    - uuid: e08cb090ae8a410ea512a1accc322416
-      name: 'TCP: established sessions'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.6.9.0]
-      key: sp.std.tcp.established
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      tags:
-      - tag: component
-        value: tcp
-    - uuid: 66e1e75e8aa64042a78b71befaa37b12
-      name: 'TCP: active connection opens per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.6.5.0]
-      key: sp.std.tcp.active_opens
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: tcp
-    - uuid: b6b10af94e6d46e3aa453a39399fe2c7
-      name: 'TCP: passive connection opens per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.6.6.0]
-      key: sp.std.tcp.passive_opens
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: tcp
-    - uuid: 6aef08e3c99e459fabd52e63ace2034f
-      name: 'TCP: failed connection attempts per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.6.7.0]
-      key: sp.std.tcp.failed
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: tcp
-    - uuid: cce42802b8794276a57a61066ed1a7ba
-      name: 'TCP: reset connections per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.6.8.0]
-      key: sp.std.tcp.resets
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: tcp
-    - uuid: 7e842ed0c5354bfaa0cdfbf0bf2f6dee
-      name: 'TCP: received segments per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.6.10.0]
-      key: sp.std.tcp.in_segments
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: tcp
-    - uuid: d902a6f5407f4771aa809c253ef34879
-      name: 'TCP: sent segments per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.6.11.0]
-      key: sp.std.tcp.out_segments
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: tcp
-    - uuid: 6a5fe97cb62a47aaa196cd98e3865722
-      name: 'TCP: retransmitted segments per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.6.12.0]
-      key: sp.std.tcp.retransmits
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: tcp
-    - uuid: 96483fd144fb4b9fa8a95779e1a2bbdb
-      name: 'TCP: input errors per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.6.14.0]
-      key: sp.std.tcp.in_errors
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: tcp
-    - uuid: 3a629b26c21641deabb6317e5f83809e
-      name: 'UDP: incoming packets per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.7.1.0]
-      key: sp.std.udp.in_datagrams
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: udp
-    - uuid: 114fd16517b54cb3a2518fe148e7d793
-      name: 'UDP: outgoing packets per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.7.4.0]
-      key: sp.std.udp.out_datagrams
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: udp
-    - uuid: 327610b996594503a76e90757eb2fd93
-      name: 'UDP: input errors per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.7.3.0]
-      key: sp.std.udp.in_errors
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: udp
-    - uuid: 1057812effb44c36acbb53027b74d1ea
-      name: 'UDP: packets to unopened ports per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.7.2.0]
-      key: sp.std.udp.no_ports
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: udp
-    - uuid: 2b1b7fc9eb4a4509a858a54d6f9c0bc5
-      name: 'IP: incoming discards per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.4.8.0]
-      key: sp.std.ip.in_discards
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: ip
-    - uuid: 2bae88389124474ea67232b4208f36be
-      name: 'IP: outgoing discards per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.4.11.0]
-      key: sp.std.ip.out_discards
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: ip
-    - uuid: 8e46bc4292e04c74a16c5bfebd4329fc
-      name: 'IP: packets without route per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.4.12.0]
-      key: sp.std.ip.out_no_route
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: ip
-    - uuid: 2896f2c51d6b4f01a9d36581de34367d
-      name: 'ICMP: incoming errors per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.5.2.0]
-      key: sp.std.icmp.in_errors
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: icmp
-    - uuid: fd727fc036b9440eaf389634aa530c96
-      name: 'ICMP: outgoing errors per second'
-      type: SNMP_AGENT
-      snmp_oid: get[1.3.6.1.2.1.5.15.0]
-      key: sp.std.icmp.out_errors
-      delay: 5m
-      description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
-      value_type: FLOAT
-      units: ops/s
-      preprocessing:
-      - type: CHANGE_PER_SECOND
-      tags:
-      - tag: component
-        value: icmp
-    discovery_rules:
+          name: 'System: physical RAM installed (KiB)'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.25.2.2.0]
+          key: sp.hr.ram.total_kib
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          units: KiB
+          tags:
+          - tag: component
+            value: memory
+        - uuid: ff8915d9268d4333a6155e8198c8849f
+          name: 'System: running process count'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.25.1.6.0]
+          key: sp.hr.proc.count
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          tags:
+          - tag: component
+            value: system
+        - uuid: cf55bb0686f74c5cacc8bbea428a87d4
+          name: 'System: logged in user count'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.25.1.5.0]
+          key: sp.hr.user.count
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          tags:
+          - tag: component
+            value: system
+        - uuid: e08cb090ae8a410ea512a1accc322416
+          name: 'TCP: established sessions'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.6.9.0]
+          key: sp.std.tcp.established
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          tags:
+          - tag: component
+            value: tcp
+        - uuid: 66e1e75e8aa64042a78b71befaa37b12
+          name: 'TCP: active connection opens per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.6.5.0]
+          key: sp.std.tcp.active_opens
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: tcp
+        - uuid: b6b10af94e6d46e3aa453a39399fe2c7
+          name: 'TCP: passive connection opens per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.6.6.0]
+          key: sp.std.tcp.passive_opens
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: tcp
+        - uuid: 6aef08e3c99e459fabd52e63ace2034f
+          name: 'TCP: failed connection attempts per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.6.7.0]
+          key: sp.std.tcp.failed
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: tcp
+        - uuid: cce42802b8794276a57a61066ed1a7ba
+          name: 'TCP: reset connections per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.6.8.0]
+          key: sp.std.tcp.resets
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: tcp
+        - uuid: 7e842ed0c5354bfaa0cdfbf0bf2f6dee
+          name: 'TCP: received segments per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.6.10.0]
+          key: sp.std.tcp.in_segments
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: tcp
+        - uuid: d902a6f5407f4771aa809c253ef34879
+          name: 'TCP: sent segments per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.6.11.0]
+          key: sp.std.tcp.out_segments
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: tcp
+        - uuid: 6a5fe97cb62a47aaa196cd98e3865722
+          name: 'TCP: retransmitted segments per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.6.12.0]
+          key: sp.std.tcp.retransmits
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: tcp
+        - uuid: 96483fd144fb4b9fa8a95779e1a2bbdb
+          name: 'TCP: input errors per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.6.14.0]
+          key: sp.std.tcp.in_errors
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: tcp
+        - uuid: 3a629b26c21641deabb6317e5f83809e
+          name: 'UDP: incoming packets per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.7.1.0]
+          key: sp.std.udp.in_datagrams
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: udp
+        - uuid: 114fd16517b54cb3a2518fe148e7d793
+          name: 'UDP: outgoing packets per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.7.4.0]
+          key: sp.std.udp.out_datagrams
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: udp
+        - uuid: 327610b996594503a76e90757eb2fd93
+          name: 'UDP: input errors per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.7.3.0]
+          key: sp.std.udp.in_errors
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: udp
+        - uuid: 1057812effb44c36acbb53027b74d1ea
+          name: 'UDP: packets to unopened ports per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.7.2.0]
+          key: sp.std.udp.no_ports
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: udp
+        - uuid: 2b1b7fc9eb4a4509a858a54d6f9c0bc5
+          name: 'IP: incoming discards per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.4.8.0]
+          key: sp.std.ip.in_discards
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: ip
+        - uuid: 2bae88389124474ea67232b4208f36be
+          name: 'IP: outgoing discards per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.4.11.0]
+          key: sp.std.ip.out_discards
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: ip
+        - uuid: 8e46bc4292e04c74a16c5bfebd4329fc
+          name: 'IP: packets without route per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.4.12.0]
+          key: sp.std.ip.out_no_route
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: ip
+        - uuid: 2896f2c51d6b4f01a9d36581de34367d
+          name: 'ICMP: incoming errors per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.5.2.0]
+          key: sp.std.icmp.in_errors
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: icmp
+        - uuid: fd727fc036b9440eaf389634aa530c96
+          name: 'ICMP: outgoing errors per second'
+          type: SNMP_AGENT
+          snmp_oid: get[1.3.6.1.2.1.5.15.0]
+          key: sp.std.icmp.out_errors
+          delay: 5m
+          description: Standard MIB-II/HOST-RESOURCES-MIB scalar retained from earlier monitoring; live verification required.
+          value_type: FLOAT
+          units: ops/s
+          preprocessing:
+          - type: CHANGE_PER_SECOND
+          tags:
+          - tag: component
+            value: icmp
+      discovery_rules:
         -
           uuid: "9c27ac7fff164d4fae21058baca58653"
           name: "Services discovery"
@@ -981,34 +981,34 @@ zabbix_export:
                   value: "{#LABEL}"
           status: "DISABLED"
       - uuid: 3ad85894b8844d9aaca46b28ba17390a
-      name: 'OPTIONAL: HOST-RESOURCES per-core CPU'
-      type: SNMP_AGENT
-      snmp_oid: discovery[{#CPULOAD},1.3.6.1.2.1.25.3.3.1.2]
-      key: sp.std.cpu.discovery
-      delay: 1h
-      status: DISABLED
-      description: Narrow per-core CPU discovery; not the problematic hrDevice and hrStorage inventories. Enable only after testing.
-      item_prototypes:
-      - uuid: 46427e0a7c684390a398395675d29fd8
-        name: 'CPU {#SNMPINDEX}: utilisation'
-        type: SNMP_AGENT
-        snmp_oid: get[1.3.6.1.2.1.25.3.3.1.2.{#SNMPINDEX}]
-        key: sp.std.cpu.util[{#SNMPINDEX}]
-        delay: 3m
-        units: '%'
-        tags:
-        - tag: component
-          value: cpu
-      graph_prototypes:
-      - uuid: c01616e0e07c479aa1f24fdca97bab82
-        name: 'CPU {#SNMPINDEX}: utilisation'
-        graph_items:
-        - sortorder: '0'
-          color: 199C0D
-          item:
-            host: Securepoint UTM Unified v5 by SNMP
+          name: 'OPTIONAL: HOST-RESOURCES per-core CPU'
+          type: SNMP_AGENT
+          snmp_oid: discovery[{#CPULOAD},1.3.6.1.2.1.25.3.3.1.2]
+          key: sp.std.cpu.discovery
+          delay: 1h
+          status: DISABLED
+          description: Narrow per-core CPU discovery; not the problematic hrDevice and hrStorage inventories. Enable only after testing.
+          item_prototypes:
+        - uuid: 46427e0a7c684390a398395675d29fd8
+            name: 'CPU {#SNMPINDEX}: utilisation'
+            type: SNMP_AGENT
+            snmp_oid: get[1.3.6.1.2.1.25.3.3.1.2.{#SNMPINDEX}]
             key: sp.std.cpu.util[{#SNMPINDEX}]
-    macros:
+            delay: 3m
+            units: '%'
+            tags:
+            - tag: component
+              value: cpu
+          graph_prototypes:
+        - uuid: c01616e0e07c479aa1f24fdca97bab82
+            name: 'CPU {#SNMPINDEX}: utilisation'
+            graph_items:
+            - sortorder: '0'
+              color: 199C0D
+              item:
+                host: Securepoint UTM Unified v5 by SNMP
+                key: sp.std.cpu.util[{#SNMPINDEX}]
+      macros:
         -
           macro: "{$SP.SERVICE.ALERT}"
           value: "0"
@@ -1173,94 +1173,94 @@ zabbix_export:
           item:
             host: "Securepoint UTM Unified v5 by SNMP"
             key: "sp.mib.license.days"
-  - uuid: 7bb83c7f27b24a05a6875e37f745c9d9
-    name: 'Securepoint: established TCP sessions'
-    graph_items:
-    - sortorder: '0'
-      color: 1A7D33
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.tcp.established
-  - uuid: d26c9b080102479ca5244b78842b642c
-    name: 'Securepoint: TCP opens and failures per second'
-    graph_items:
-    - sortorder: '0'
-      color: 1A7D33
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.tcp.active_opens
-    - sortorder: '1'
-      color: CB4B16
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.tcp.failed
-  - uuid: acb9aa4314a74f9fad6f1a53b73f3397
-    name: 'Securepoint: TCP retransmissions and errors per second'
-    graph_items:
-    - sortorder: '0'
-      color: 1A7D33
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.tcp.retransmits
-    - sortorder: '1'
-      color: CB4B16
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.tcp.in_errors
-  - uuid: d32bbf5a958147e4abfb3e6e2453047c
-    name: 'Securepoint: UDP packets per second'
-    graph_items:
-    - sortorder: '0'
-      color: 1A7D33
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.udp.in_datagrams
-    - sortorder: '1'
-      color: CB4B16
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.udp.out_datagrams
-  - uuid: 61184f88a55844d0ac4a8694d5eee884
-    name: 'Securepoint: UDP errors per second'
-    graph_items:
-    - sortorder: '0'
-      color: 1A7D33
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.udp.in_errors
-    - sortorder: '1'
-      color: CB4B16
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.udp.no_ports
-  - uuid: de55fe255a4d4271a17e4481fde2d2ad
-    name: 'Securepoint: IP discards and routing misses per second'
-    graph_items:
-    - sortorder: '0'
-      color: 1A7D33
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.ip.in_discards
-    - sortorder: '1'
-      color: CB4B16
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.ip.out_discards
-    - sortorder: '2'
-      color: 199C0D
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.std.ip.out_no_route
-  - uuid: df797ad24767498ead7bd22a4570f49e
-    name: 'Securepoint: process and user counts'
-    graph_items:
-    - sortorder: '0'
-      color: 1A7D33
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.hr.proc.count
-    - sortorder: '1'
-      color: CB4B16
-      item:
-        host: Securepoint UTM Unified v5 by SNMP
-        key: sp.hr.user.count
+    - uuid: 7bb83c7f27b24a05a6875e37f745c9d9
+      name: 'Securepoint: established TCP sessions'
+      graph_items:
+      - sortorder: '0'
+        color: 1A7D33
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.tcp.established
+    - uuid: d26c9b080102479ca5244b78842b642c
+      name: 'Securepoint: TCP opens and failures per second'
+      graph_items:
+      - sortorder: '0'
+        color: 1A7D33
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.tcp.active_opens
+      - sortorder: '1'
+        color: CB4B16
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.tcp.failed
+    - uuid: acb9aa4314a74f9fad6f1a53b73f3397
+      name: 'Securepoint: TCP retransmissions and errors per second'
+      graph_items:
+      - sortorder: '0'
+        color: 1A7D33
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.tcp.retransmits
+      - sortorder: '1'
+        color: CB4B16
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.tcp.in_errors
+    - uuid: d32bbf5a958147e4abfb3e6e2453047c
+      name: 'Securepoint: UDP packets per second'
+      graph_items:
+      - sortorder: '0'
+        color: 1A7D33
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.udp.in_datagrams
+      - sortorder: '1'
+        color: CB4B16
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.udp.out_datagrams
+    - uuid: 61184f88a55844d0ac4a8694d5eee884
+      name: 'Securepoint: UDP errors per second'
+      graph_items:
+      - sortorder: '0'
+        color: 1A7D33
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.udp.in_errors
+      - sortorder: '1'
+        color: CB4B16
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.udp.no_ports
+    - uuid: de55fe255a4d4271a17e4481fde2d2ad
+      name: 'Securepoint: IP discards and routing misses per second'
+      graph_items:
+      - sortorder: '0'
+        color: 1A7D33
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.ip.in_discards
+      - sortorder: '1'
+        color: CB4B16
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.ip.out_discards
+      - sortorder: '2'
+        color: 199C0D
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.std.ip.out_no_route
+    - uuid: df797ad24767498ead7bd22a4570f49e
+      name: 'Securepoint: process and user counts'
+      graph_items:
+      - sortorder: '0'
+        color: 1A7D33
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.hr.proc.count
+      - sortorder: '1'
+        color: CB4B16
+        item:
+          host: Securepoint UTM Unified v5 by SNMP
+          key: sp.hr.user.count
