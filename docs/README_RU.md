@@ -1,5 +1,16 @@
 # Securepoint → Zabbix: инструкция на русском
 
+## Рекомендуемый следующий тест: Standalone v5.6 без родительского шаблона
+
+[**Скачать v5.6 YAML**](../templates/securepoint-utm-standalone-v5.6.yaml) · [Полная инструкция перехода и отката](V5_6_STANDALONE.md)
+
+Standalone v5.6 **не связан** с `Network Generic Device by SNMP`. В нём собственный мониторинг интерфейсов (RX/TX, статус, скорость, ошибки/discards), 4 вкладки Dashboard, CPU/RAM, VPN, сервисы, прошивка и лицензия. Добавлены уведомление при отсутствии SNMP-данных 15 минут и отключённый по умолчанию триггер падения критически важного интерфейса.
+
+**Переключение с v5.5:** импортируй v5.6 как НОВЫЙ шаблон; затем в Host `Firewall` — Unlink and clear старого `Securepoint UTM Unified v5 by SNMP` (и отдельно подключённого generic, если он есть), Update; после этого привяжи `Securepoint UTM Standalone v5.6 by SNMP` и Update. **История старых Items удалится** — это согласовано пользователем. Не удаляй общий шаблон Zabbix во всей системе. Не пытайся привязать v5.6 одновременно со старым v5.5: Item Keys совпадут.
+
+`Latest data`: обязательно проверить реальные ответы SNMP, особенно firmware/license. GitHub CI не проверяет живое устройство.
+
+
 ## Актуальная тестовая версия — v5.5 (интерфейсы)
 
 **[Скачать v5.5 YAML](../templates/securepoint-utm-unified-v5.5-interfaces.yaml)** · [Подробная инструкция](V5_5_INTERFACES.md)
