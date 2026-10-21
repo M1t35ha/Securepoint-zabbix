@@ -134,6 +134,31 @@ def check(path: Path) -> list[str]:
                         if any(f.get("type") == "ITEM" and (f.get("value") or {}).get("key", "").startswith("sp.mib.")
                                for f in card.get("fields", [])):
                             errors.append(f"v5.2 overview top card depends on unverified vendor metric: {card.get('name')}")
+        if path.name.endswith("v5.4-firmware-license.yaml"):
+            keys_needed = {"sp.mib.firmware.current", "sp.mib.firmware.new", "sp.mib.license.days", "sp.mib.license.type"}
+            found = {item.get("key"): item for item in items}
+            if keys_needed - found.keys():
+                errors.append(f"v5.4: missing firmware/license items: {keys_needed - found.keys()}")
+            cfg = {m.get("macro"): m.get("value") for m in template.get("macros", [])}
+            required = {"{$SP.FIRMWARE.ALERT}": "1", "{$SP.LICENSE.ALERT}": "1",
+                        "{$SP.LICENSE.WARN.DAYS}": "30", "{$SP.LICENSE.CRIT.DAYS}": "7",
+                        "{$SP.LICENSE.ZERO.IS.EXPIRED}": "0"}
+            for m, desired in required.items():
+                if cfg.get(m) != desired:
+                    errors.append(f"v5.4: invalid default for {m}: {cfg.get(m)}")
+            trigger_expressions = [tr.get("expression", "") for item in items for tr in item.get("triggers", [])]
+            if not any("sp.mib.firmware.new" in exp and "sp.mib.firmware.current" in exp and "<>" in exp for exp in trigger_expressions):
+                errors.append("v5.4: missing vendor firmware comparison trigger")
+            if not any("{$SP.LICENSE.WARN.DAYS}" in exp for exp in trigger_expressions):
+                errors.append("v5.4: missing license warning threshold")
+            if not any("{$SP.LICENSE.CRIT.DAYS}" in exp and ">0" in exp for exp in trigger_expressions):
+                errors.append("v5.4: missing license urgent threshold")
+            if not any("{$SP.LICENSE.ZERO.IS.EXPIRED}=1" in exp for exp in trigger_expressions):
+                errors.append("v5.4: missing opt-in zero-license trigger")
+            vpn_pages = [page for dash in template.get("dashboards", []) for page in dash.get("pages", []) if page.get("name") == "VPN & Security"]
+            if not vpn_pages or not keys_needed.issubset(
+                {f.get("value", {}).get("key") for w in vpn_pages[0].get("widgets", []) for f in w.get("fields", []) if f.get("type") == "ITEM"}):
+                errors.append("v5.4: missing firmware/license dashboard cards")
         alerts = {m.get("macro"): m.get("value") for m in template.get("macros", [])}
         for macro, value in alerts.items():
             if macro and macro.endswith(".ALERT}") and value != "0":
