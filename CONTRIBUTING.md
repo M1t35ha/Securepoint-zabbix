@@ -1,12 +1,20 @@
-# Contributing
+# Contributing to Securepoint UTM → Zabbix
 
-We welcome useful, reproducible improvements to Securepoint UTM monitoring.
+Current active artifact: [Standalone v5.6 template](templates/securepoint-utm-standalone-v5.6.yaml), release candidate `v1.0.0-rc.1`.
 
-1. Open an issue with a **sanitized** description of the device version, failing Item key/OID, or feature gap.
-2. Create a branch with a small, reviewable change.
-3. Keep existing template UUIDs and Item keys stable when updating an existing Item. Never change a key just to reword its label.
-4. Run `python -m pip install -r requirements-dev.txt` and `python tools/validate_template.py templates/securepoint-utm-mib-v4.yaml`.
-5. Test on a separate Zabbix host. Provide results from `docs/TESTING.md` (import result, Supported/Unsupported, LLD counts).
-6. Send a Pull Request. Explicitly list what was **MIB-mapped**, what was **live-tested** and what remains **assumed/unconfirmed**.
+1. Review the [RC1 acceptance status](docs/RELEASE_CANDIDATE_1.md) and [roadmap](docs/ROADMAP.md) before proposing work.
+2. Open an Issue describing **one** reproducible problem: firmware/build (no serial number), Item key/OID, expected vs actual type/value, sanitized error and relevant feature settings.
+3. Use a topic branch and small PR. Preserve UUIDs and existing keys for fixes to already-imported Items. Add new UUIDv4 identifiers for new objects.
+4. Run:
+   ```bash
+   python -m pip install -r requirements-dev.txt
+   python tools/validate_template.py templates/securepoint-utm-standalone-v5.6.yaml
+   python -m unittest discover -s tests -v
+   ```
+5. Test changes with Zabbix 8.0 against a disposable host or approved lab; record what was **defined by MIB**, **imported**, **returned actual SNMP values**, or **behavior-tested**.
+6. Update the [test checklist](docs/TESTING.md), [roadmap](docs/ROADMAP.md), and [changelog](CHANGELOG.md) for feature changes. Documentation-only changes need no new YAML revision.
+7. Open a PR into the active release line. Do not silently modify a tested installer without a new test cycle; use RC2 for unverified behavioral changes.
 
-Do not commit proprietary manufacturer MIB files, client network identifiers, authentication credentials, SNMP dumps, or captured session data. Proposed monitoring checks should be read-only.
+Do not commit proprietary MIB files, authentication material, private network information, client IP addresses, peer identifiers or raw packet/SNMP captures. Monitoring must stay read-only.
+
+The repository currently has no declared permissive/open-source license; ask the owner before copying code in or out.
