@@ -1,5 +1,12 @@
 # Securepoint UTM → Zabbix
 
+## Release Candidate 1 — v1.0.0-rc.1
+
+**Current tested baseline:** [Securepoint UTM Standalone v5.6 YAML](templates/securepoint-utm-standalone-v5.6.yaml) · [RC1 release notes and open tests](docs/RELEASE_CANDIDATE_1.md).
+
+This is the integration snapshot for testing: independent of the generic SNMP template, four host dashboard tabs, own network discovery, VPN/security monitoring, and firmware/license alert definitions. **Real Zabbix 8.0 import and six-interface state discovery have been observed; all SNMP metrics and alerts have not yet passed acceptance.** This branch is a release *candidate*, not the stable release.
+
+
 [![Template validation](https://github.com/M1t35ha/Securepoint-zabbix/actions/workflows/validate.yml/badge.svg)](https://github.com/M1t35ha/Securepoint-zabbix/actions/workflows/validate.yml)
 
 **[Русская инструкция](docs/README_RU.md)** · [Current tasks](https://github.com/M1t35ha/Securepoint-zabbix/issues)
