@@ -1,0 +1,61 @@
+# Securepoint UTM → Zabbix
+
+Community-maintained, **experimental** monitoring template for Securepoint NextGen UTM 14.x and Zabbix 8.0 (7.0 export compatibility).
+
+> [!WARNING]
+> This is a test-stage project. The OID names, table definitions and enumerations were cross-checked against Securepoint's official MIB modules (2025-05-27), **but an MIB is not proof that an OID exists on every device/firmware**. This template has not yet passed a live-device acceptance test. Do **not** replace your production template without testing.
+
+## What it monitors
+
+| Area | Source | Status |
+| --- | --- | --- |
+| Product and installed/available firmware | Securepoint SNMP | MIB-mapped; requires live verification |
+| License limits and days remaining | Securepoint SNMP | MIB-mapped; requires live verification |
+| Conntrack count and limit | Securepoint SNMP | MIB-mapped; requires live verification |
+| Application/service states | SNMP LLD | MIB-mapped; requires live verification |
+| IPsec tunnels | SNMP LLD | MIB-mapped; requires live verification |
+| OpenVPN profiles and client counts | SNMP LLD | MIB-mapped; requires live verification |
+| Antivirus update state | SNMP LLD | MIB-mapped; requires live verification |
+| WireGuard interfaces, peers, counters | SNMP LLD | MIB-mapped; requires live verification |
+| System uptime and interface traffic | Linked generic SNMP template | Depends on installed Zabbix template |
+| HA detail, IPsec subnets, backup inventory | Optional | Disabled until validated |
+
+Known limitations: a WireGuard handshake value is collected **raw** because its unit/epoch must be verified; no handshake-age alarm yet. Tunnel/service alerts are opt-in to avoid alarming on deliberately inactive instances.
+
+## Quick start (test host first)
+
+1. Ensure **Zabbix 8.0** and the official built-in `Network Generic Device by SNMP` template are available.
+2. Import [the template](templates/securepoint-utm-mib-v4.yaml) under **Data collection → Templates → Import**. Do **not** select *Delete missing* on unrelated templates.
+3. Make a **dedicated test host**, and configure its Securepoint IPv4 address and **SNMPv3 interface credentials in Zabbix**, not in this repository. Use only a read-only SNMP account, with access restricted to the Zabbix server/proxy.
+4. Link the imported Securepoint template to the test host. Do not simultaneously link the generic template explicitly if it is already inherited.
+5. Wait for discovery, then inspect **Latest data**, **Discovery**, and **Not supported** items. Record what exists on your actual firmware.
+6. Enable per-tunnel and per-service alerts only after confirming their status semantics and whether they should stay online.
+
+For more detail see [Installation](docs/INSTALL.md), [Troubleshooting](docs/TROUBLESHOOTING.md), and [OID inventory](docs/OID_REFERENCE.md).
+
+## Why this project exists
+
+Earlier attempts generated hundreds of unusable items by blindly discovering `hrStorage` and `hrDevice`, including non-existent instances, cascading calculated-item errors and a zero-denominator swap formula. This repository deliberately excludes those experiments from the maintained template. See [lessons learned](docs/TROUBLESHOOTING.md).
+
+## Development and checks
+
+Changes should be made on a branch and merged via a PR after automated structural checks and a manual SNMP acceptance run.
+
+```bash
+python -m pip install -r requirements-dev.txt
+python tools/validate_template.py templates/securepoint-utm-mib-v4.yaml
+```
+
+The check is **offline only**. Passing CI does not mean Zabbix accepted the import or the firewall returned the items. Provide sanitized findings using the [test checklist](docs/TESTING.md).
+
+## Official MIBs and intellectual property
+
+The proprietary `SECUREPOINT-UTM.mib` and `SECUREPOINT-MIB.mib` contain restrictive Securepoint GmbH copyright notices. **They are intentionally not redistributed here.** Authorized users can download both through [Securepoint's reseller portal](https://my.securepoint.de/) (Downloads → UTM, *MIB File – Securepoint NextGen UTM* and *MIB File – Securepoint Systeme Allgemein*). The project is **not affiliated with, endorsed by, or supported by Securepoint GmbH**.
+
+Source-code licensing has not yet been selected by the repository owner; until then do not assume that repository contents carry an open-source license.
+
+## Planned work
+
+See [Roadmap](docs/ROADMAP.md). Priority is to establish a known-good device-specific OID inventory, then add useful graphs, selective trigger rules and dashboards. No blind broad SNMP-walk ingestion.
+
+Contributions and sanitized test reports are welcome via GitHub Issues and PRs. Do not post SNMP secrets, public IP addresses, account names or client-specific tunnel names.
