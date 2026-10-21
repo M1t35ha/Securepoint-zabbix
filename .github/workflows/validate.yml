@@ -19,3 +19,5 @@ jobs:
         run: |
           python tools/validate_template.py templates/securepoint-utm-mib-v4.yaml
           python tools/validate_template.py templates/securepoint-utm-unified-v5.yaml
+      - name: Offline SNMPwalk parser tests (no device required)
+        run: python -m unittest discover -s tests -v
