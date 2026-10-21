@@ -1,5 +1,19 @@
 # Roadmap
 
+## Unified v5 candidate (2026-10-21)
+
+- [x] Research community IPsec/WireGuard implementations and Zabbix SNMP template practices.
+- [x] Combine manufacturer-MIB v4 with selected operational standard counters from v3.
+- [x] Restore network diagnostics and graphs without hrStorage/hrDevice discovery.
+- [x] Optional CPU discovery; per-service and per-tunnel alerts opt-in.
+- [x] Document included/excluded capabilities, provenance, privacy and a test plan.
+- [ ] Pass offline CI for v5 **and** v4.
+- [ ] Confirm import in Zabbix 8.0 test host.
+- [ ] Verify every vendor OID and optional table on firmware 14.x via sanitized snmpwalk.
+- [ ] Compare semantics and graphs against firewall GUI.
+- [ ] Only then mark release `v5.0.0` and consider production migration.
+
+
 This is a prioritized engineering plan, **not** a claim of current support.
 
 - [x] Establish public repository, template location and documentation.
