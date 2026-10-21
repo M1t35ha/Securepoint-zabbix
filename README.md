@@ -6,8 +6,6 @@
 
 Community-maintained, **experimental** monitoring template for Securepoint NextGen UTM 14.x and Zabbix 8.0 (7.0 export compatibility).
 
-> **Latest development: Securepoint Unified v5.5 (interfaces).** The full candidate, including the four-tab Command Center and all-interface state/speed/traffic/error monitoring, is available in [draft PR #5](https://github.com/M1t35ha/Securepoint-zabbix/pull/5). See the [v5.5 YAML](https://github.com/M1t35ha/Securepoint-zabbix/blob/feature/utm-v5-unified/templates/securepoint-utm-unified-v5.5-interfaces.yaml) and [interface/dashboard notes](https://github.com/M1t35ha/Securepoint-zabbix/blob/feature/utm-v5-unified/docs/V5_5_INTERFACES.md). **Still awaiting real Zabbix 8.0 import and SNMP compatibility checks; main remains the stable reference branch.**
-
 > [!WARNING]
 > This is a test-stage project. The OID names, table definitions and enumerations were cross-checked against Securepoint's official MIB modules (2025-05-27), **but an MIB is not proof that an OID exists on every device/firmware**. This template has not yet passed a live-device acceptance test. Do **not** replace your production template without testing.
 
@@ -65,3 +63,5 @@ Source-code licensing has not yet been selected by the repository owner; until t
 See [Roadmap](docs/ROADMAP.md). Priority is to establish a known-good device-specific OID inventory, then add useful graphs, selective trigger rules and dashboards. No blind broad SNMP-walk ingestion.
 
 Contributions and sanitized test reports are welcome via GitHub Issues and PRs. Do not post SNMP secrets, public IP addresses, account names or client-specific tunnel names.
+
+> Latest experimental improvements (all-interface monitoring and four-tab dashboard) are under review in [PR #5](https://github.com/M1t35ha/Securepoint-zabbix/pull/5). The README in that branch contains the latest test instructions; main still ships the conservative reference template.
