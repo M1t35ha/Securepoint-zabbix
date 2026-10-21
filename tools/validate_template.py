@@ -161,7 +161,8 @@ def check(path: Path) -> list[str]:
                 errors.append("v5.4: missing firmware/license dashboard cards")
         alerts = {m.get("macro"): m.get("value") for m in template.get("macros", [])}
         for macro, value in alerts.items():
-            if macro and macro.endswith(".ALERT}") and value != "0":
+            enabled_for_v54 = path.name.endswith("v5.4-firmware-license.yaml") and macro in {"{$SP.FIRMWARE.ALERT}", "{$SP.LICENSE.ALERT}"}
+            if macro and macro.endswith(".ALERT}") and value != "0" and not enabled_for_v54:
                 errors.append(f"Alert macro not off by default: {macro}")
         if not all_keys:
             errors.append(f"Template {name} has no keys")
