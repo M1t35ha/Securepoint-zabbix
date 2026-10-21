@@ -115,6 +115,25 @@ def check(path: Path) -> list[str]:
                             errors.append(f"Dashboard widget {widget.get('name')} references missing graph {value.get('name')}")
                         elif field["type"] == "GRAPH_PROTOTYPE" and value.get("name") not in dashboard_prototypes:
                             errors.append(f"Dashboard widget {widget.get('name')} references missing graph prototype {value.get('name')}")
+        # Vendor OID regression guard v5.2: Securepoint example and previous observed walk omit scalar .0.
+        if path.name.endswith("v5.2-dashboard.yaml"):
+            vendor_scalars = [i for i in items if i.get("snmp_oid", "").startswith("get[1.3.6.1.4.1.28553.")]
+            for item in vendor_scalars:
+                if item["snmp_oid"].endswith(".0]"):
+                    errors.append(f"v5.2 vendor scalar with unverified .0 suffix: {item['key']}")
+            iface = next((r for r in rules if r.get("key") == "sp.dashboard.interface.discovery"), None)
+            if not iface or not iface.get("filter", {}).get("conditions"):
+                errors.append("v5.2 interface discovery missing safety filter")
+            if "{$SP.DASHBOARD.IF.MATCHES}" not in {m.get("macro") for m in template.get("macros", [])}:
+                errors.append("v5.2 interface discovery filter macro missing")
+            for dashboard in template.get("dashboards", []):
+                overview = next((p for p in dashboard.get("pages", []) if p.get("name") == "Overview"), None)
+                if overview:
+                    top_cards = [w for w in overview.get("widgets", []) if w.get("type") == "item" and int(w.get("y", "0")) == 0]
+                    for card in top_cards:
+                        if any(f.get("type") == "ITEM" and (f.get("value") or {}).get("key", "").startswith("sp.mib.")
+                               for f in card.get("fields", [])):
+                            errors.append(f"v5.2 overview top card depends on unverified vendor metric: {card.get('name')}")
         alerts = {m.get("macro"): m.get("value") for m in template.get("macros", [])}
         for macro, value in alerts.items():
             if macro and macro.endswith(".ALERT}") and value != "0":
