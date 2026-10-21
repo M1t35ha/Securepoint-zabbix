@@ -1252,6 +1252,9 @@ zabbix_export:
               key: sp.dashboard.system.name
           - type: INTEGER
             name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
             value: '2'
           - type: INTEGER
             name: value_size
@@ -1277,6 +1280,9 @@ zabbix_export:
               key: sp.dashboard.uptime
           - type: INTEGER
             name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
             value: '2'
           - type: INTEGER
             name: value_size
@@ -1302,9 +1308,12 @@ zabbix_export:
               key: sp.dashboard.cpu.used_pct
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -1342,9 +1351,12 @@ zabbix_export:
               key: sp.dashboard.mem.used_pct
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -1382,9 +1394,12 @@ zabbix_export:
               key: sp.hr.proc.count
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -1422,9 +1437,12 @@ zabbix_export:
               key: sp.std.tcp.established
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -1753,9 +1771,12 @@ zabbix_export:
               key: sp.std.tcp.established
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -1793,9 +1814,12 @@ zabbix_export:
               key: sp.std.tcp.active_opens
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -1833,9 +1857,12 @@ zabbix_export:
               key: sp.std.tcp.retransmits
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -1873,9 +1900,12 @@ zabbix_export:
               key: sp.std.udp.in_datagrams
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -1913,9 +1943,12 @@ zabbix_export:
               key: sp.std.udp.in_errors
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -1953,9 +1986,12 @@ zabbix_export:
               key: sp.std.ip.in_discards
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -2137,6 +2173,9 @@ zabbix_export:
               key: sp.dashboard.system.name
           - type: INTEGER
             name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
             value: '2'
           - type: INTEGER
             name: value_size
@@ -2162,6 +2201,9 @@ zabbix_export:
               key: sp.dashboard.uptime
           - type: INTEGER
             name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
             value: '2'
           - type: INTEGER
             name: value_size
@@ -2187,9 +2229,12 @@ zabbix_export:
               key: sp.dashboard.cpu.used_pct
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
@@ -2227,9 +2272,12 @@ zabbix_export:
               key: sp.dashboard.mem.used_pct
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
           - type: INTEGER
             name: show.1
+            value: '2'
+          - type: INTEGER
+            name: show.2
             value: '5'
           - type: STRING
             name: sparkline.color
