@@ -159,9 +159,28 @@ def check(path: Path) -> list[str]:
             if not vpn_pages or not keys_needed.issubset(
                 {f.get("value", {}).get("key") for w in vpn_pages[0].get("widgets", []) for f in w.get("fields", []) if f.get("type") == "ITEM"}):
                 errors.append("v5.4: missing firmware/license dashboard cards")
+        if path.name.endswith("v5.5-interfaces.yaml"):
+            rule = next((r for r in rules if r.get("key") == "sp.dashboard.interface.discovery"), None)
+            expected = {"in.bps", "out.bps", "oper.status", "admin.status", "speed", "in.errors", "out.errors", "in.discards", "out.discards"}
+            if rule is None:
+                errors.append("v5.5: missing interface discovery")
+            else:
+                actual = {p.get("key", "").split("[")[0].removeprefix("sp.dashboard.interface.") for p in rule.get("item_prototypes", [])}
+                if expected != actual:
+                    errors.append(f"v5.5: unexpected interface prototype keys {actual ^ expected}")
+                if len(rule.get("graph_prototypes", [])) != 2:
+                    errors.append("v5.5: expected traffic and errors/discards graph prototypes")
+                if not rule.get("filter", {}).get("conditions"):
+                    errors.append("v5.5: missing interface discovery filter")
+            pages = [p.get("name") for d in template.get("dashboards", []) for p in d.get("pages", [])]
+            if pages != ["Overview", "Network", "Interfaces", "VPN & Security"]:
+                errors.append(f"v5.5: incorrect dashboard pages: {pages}")
+            vmap_names = {m.get("name") for m in template.get("valuemaps", [])}
+            if not {"Securepoint interface operational status", "Securepoint interface administrative status"}.issubset(vmap_names):
+                errors.append("v5.5: missing interface state value maps")
         alerts = {m.get("macro"): m.get("value") for m in template.get("macros", [])}
         for macro, value in alerts.items():
-            enabled_for_v54 = path.name.endswith("v5.4-firmware-license.yaml") and macro in {"{$SP.FIRMWARE.ALERT}", "{$SP.LICENSE.ALERT}"}
+            enabled_for_v54 = path.name in {"securepoint-utm-unified-v5.4-firmware-license.yaml", "securepoint-utm-unified-v5.5-interfaces.yaml"} and macro in {"{$SP.FIRMWARE.ALERT}", "{$SP.LICENSE.ALERT}"}
             if macro and macro.endswith(".ALERT}") and value != "0" and not enabled_for_v54:
                 errors.append(f"Alert macro not off by default: {macro}")
         if not all_keys:
