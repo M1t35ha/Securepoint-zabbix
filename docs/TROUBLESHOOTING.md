@@ -1,30 +1,30 @@
-# Troubleshooting and lessons learned
+# Troubleshooting — Standalone RC1
 
-The earlier experimental v2/v3 builds generated over 400 Items on one installation. This was caused by over-broad HOST-RESOURCES-MIB discovery and unsupported per-row columns. The maintained template removes those discoveries.
+Use [the current YAML](../templates/securepoint-utm-standalone-v5.6.yaml), [OID reference](OID_REFERENCE.md) and [test checklist](TESTING.md). The **old v2/v3 discovery floods and v4/v5 YAML schema conflicts** are development history, not recommended configurations.
 
-| Error | What it means | Response |
-| --- | --- | --- |
-| `No Such Instance currently exists at this OID` | SNMP agent does not expose requested instance | Check that the scalar ends with `.0`; for tables, verify actual discovery indices and whether the specific column is implemented |
-| `Cannot evaluate function: not enough data` | Calculated/dependent Item has no valid source data yet | Fix the master Item first; do not add more dependent Items |
-| `division by zero` | Denominator is zero (for example absent swap) | No SWAP percentage in maintained template; use expressions that verify denominator or avoid division |
-| Import: unexpected `tags` under `discovery_rules` | Field is not allowed at that nesting point | Put tags on Items/prototypes rather than LLD rule |
-| Missing generic network metrics | Built-in generic SNMP template not installed/linked | Import official `Network Generic Device by SNMP` and ensure inheritance |
-| Correct number, confusing state | Missing manufacturer value mapping | Map only enums defined by the actual MIB; do not invent states |
-| Many Items unsupported after import | Template incorrectly assumes all MIB tables exist on your model | Disable unsupported optional rules, capture sanitized OID inventory, change template in PR |
+| Symptom | Interpretation / next action |
+| --- | --- |
+| `No Such Instance currently exists at this OID` | Device does not expose the requested instance. Check the exact numeric OID **in current YAML**, optional feature availability and real SNMP index. Do not automatically add `.0` to Securepoint vendor OIDs. |
+| Firmware/license shows `No data` | In current RC1 the vendor addresses omit a trailing `.0`; verify Items → Info and direct read-only SNMP response. Those values worked on one device; not guaranteed on others. |
+| `Cannot evaluate function: not enough data` | A calculated/rate Item lacks valid source samples; inspect its SNMP source first. |
+| RX/TX, errors or discards empty just after import | `CHANGE_PER_SECOND` needs at least two polls. Wait for next samples; if still empty, inspect Item errors or virtual-interface availability. |
+| Interface link speed says 0 Mbps | Can be normal for virtual/VPN interfaces without a physical link speed. |
+| 6 interfaces, but graph carousel shows one | Zabbix graph-prototype widget shows **one interface at a time** with paging. The Interfaces Top Items tables show all discovered instances simultaneously. |
+| Interface Up, WireGuard peer Disconnected | Different layers: the Linux interface can be up without a recent connected peer/handshake. |
+| Firmware-update Problem persists | Compares two **different version strings**; verify manufacturer-reported available build, active update channel and genuine recovery. This is not semantic-version ordering. |
+| License 90 days left but no alert | Default warning window is 30 days, critical 7 days. External email/Teams delivery requires Zabbix Media and Action configuration. |
+| Unexpected service Down | Some services can be intentionally off. Compare with UTM GUI before enabling service-level alarms. |
+| Hundreds of unsupported LLD objects | Check if a legacy template remains attached. RC1 deliberately excludes broad `hrStorage` and `hrDevice` inventories. |
+| Missing `Network interfaces` host dashboard | Expected! Standalone RC1 has its own **Interfaces** page and intentionally no parent generic SNMP template. |
+| Dashboard import complains of external graph prototype | Use current RC1 export. Earlier v5.1 linked to a parent template graph prototype and could not import; this was removed. |
 
-## Debugging discipline
+## Quick debugging procedure
 
-1. Classify the failed Item as **scalar**, **table**, or **calculated/dependent**.
-2. Inspect OID and type in [OID reference](OID_REFERENCE.md).
-3. Check real SNMP response directly from the Zabbix server using a restricted account (do not paste authentication secrets into issues).
-4. Make one change per test branch. Run `python tools/validate_template.py templates/securepoint-utm-mib-v4.yaml` and retest on the test host.
-5. Only after stable collection add rates, graph units and trigger thresholds.
-6. Do not re-enable broad `hrStorage`/`hrDevice` rules without a narrow, documented and device-tested filter.
+1. Identify the exact **Host → Items → Not supported** key or graph name and error text.
+2. Determine whether the metric is a vendor scalar, LLD table column, or rate/calculated item.
+3. Verify real numeric OID and index on the device, with restricted, read-only SNMPv3.
+4. Compare any enumerated state or tunnel status with the Securepoint GUI.
+5. Make the smallest template change and test in a separate Git branch; **keep existing UUIDs / item keys stable** if fixing an existing Item.
+6. Re-import with **Update existing** and **Delete missing OFF**. Do not relink old experimental templates unless performing a deliberate rollback.
 
-## Compatibility reports
-
-Create an issue containing version, list of keys, and sanitized errors from the checklist in [TESTING.md](TESTING.md). Do not post IP addresses, tunnel names or credentials.
-
-## Host update: graph `Securepoint: CPU core {#SNMPINDEX} - utilisation` already exists
-
-A v2/v3 graph prototype had the same name as the optional v5 per-core CPU graph, but its Items have different keys. Zabbix refuses the host update even if the new CPU discovery is disabled. **Do not unlink-and-clear or erase historical data solely to resolve this.** The v5 graph prototype was renamed to `Securepoint UTM v5: CPU core {#SNMPINDEX} usage`. Re-import the corrected template with *Update existing* enabled and *Delete missing* disabled; then retry host linkage. Other conflicts, if any, must be diagnosed by their exact Zabbix error.
+For historical issues (v2/v3 incorrect storage, `discovery_rules.tags` import failure, UUIDv4 errors and duplicate CPU graphs), see the [development history](../CHANGELOG.md). Never publish credentials, public management IPs, customer names, license IDs or raw SNMP dumps.
