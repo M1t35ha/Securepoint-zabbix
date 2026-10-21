@@ -1001,7 +1001,7 @@ zabbix_export:
                   value: cpu
           graph_prototypes:
             - uuid: c01616e0e07c479aa1f24fdca97bab82
-              name: 'CPU {#SNMPINDEX}: utilisation'
+              name: 'Securepoint UTM v5: CPU core {#SNMPINDEX} usage'
               graph_items:
                 - sortorder: '0'
                   color: 199C0D
