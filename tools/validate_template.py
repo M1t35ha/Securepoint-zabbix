@@ -96,6 +96,25 @@ def check(path: Path) -> list[str]:
                 errors.append(f"Bad LLD SNMP OID: {rule.get('key')}: {oid}")
             if any(prefix in oid for prefix in FORBIDDEN_OID_PREFIXES):
                 errors.append(f"Known noisy host-resources LLD: {rule.get('key')}")
+        # Template dashboards cannot refer to graph prototypes belonging to a linked parent template.
+        # Zabbix otherwise rejects the import with "Graph prototype with ID ... is not available".
+        dashboard_graphs = {g.get("name") for g in export.get("graphs", [])}
+        dashboard_prototypes = {g.get("name") for r in rules for g in r.get("graph_prototypes", [])}
+        for dashboard in template.get("dashboards", []):
+            for page in dashboard.get("pages", []):
+                for widget in page.get("widgets", []):
+                    for field in widget.get("fields", []):
+                        if field.get("type") not in {"ITEM", "GRAPH", "GRAPH_PROTOTYPE"}:
+                            continue
+                        value = field.get("value") or {}
+                        if value.get("host") != name:
+                            errors.append(f"Dashboard {dashboard.get('name')} widget {widget.get('name')} references external template {value.get('host')}")
+                        elif field["type"] == "ITEM" and value.get("key") not in regular:
+                            errors.append(f"Dashboard widget {widget.get('name')} references missing item {value.get('key')}")
+                        elif field["type"] == "GRAPH" and value.get("name") not in dashboard_graphs:
+                            errors.append(f"Dashboard widget {widget.get('name')} references missing graph {value.get('name')}")
+                        elif field["type"] == "GRAPH_PROTOTYPE" and value.get("name") not in dashboard_prototypes:
+                            errors.append(f"Dashboard widget {widget.get('name')} references missing graph prototype {value.get('name')}")
         alerts = {m.get("macro"): m.get("value") for m in template.get("macros", [])}
         for macro, value in alerts.items():
             if macro and macro.endswith(".ALERT}") and value != "0":
