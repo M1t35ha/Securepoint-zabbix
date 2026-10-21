@@ -67,3 +67,14 @@ This checks OID coverage, **not** whether the returned status value means health
 - [ ] Compare own 64-bit bps graph against generic SNMP parent traffic graph per interface.
 - [ ] Confirm in/out packet errors and discards are rates, not cumulative counters; no unsupported IF-MIB columns for configured interfaces.
 - [ ] Keep original `Network Generic Device by SNMP` linkage and its dashboard untouched unless deciding on a separate shared-template removal plan.
+
+## Standalone v5.6 acceptance checklist
+
+- [ ] Confirm no `templates` linkage on the new standalone template; technical name `Securepoint UTM Standalone v5.6 by SNMP`.
+- [ ] Import independently as **new template**, without deleting the existing one. Confirm dashboard references resolve.
+- [ ] On host Firewall, **Unlink and clear** old Unified v5.5 and generic (only if directly linked); save; then link v5.6 in second update to avoid duplicate item keys.
+- [ ] Confirm generic **Network interfaces** dashboard disappears on this host, but the generic template remains available elsewhere.
+- [ ] Ensure SNMPv3 host interface stays intact and newly collected uptime/CPU/RAM/IF-MIB items report actual values.
+- [ ] Confirm 15-minute no-data trigger and opt-in interface-link-down macros; no false alerts for intentional VPN disconnects.
+- [ ] Confirm interface metadata Items remain disabled unless manually verified.
+- [ ] Confirm legacy vendor firmware/license OIDs are still pending live validation.
