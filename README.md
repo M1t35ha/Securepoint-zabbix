@@ -9,6 +9,16 @@ Community-maintained, **experimental** monitoring template for Securepoint NextG
 > [!WARNING]
 > This is a test-stage project. The OID names, table definitions and enumerations were cross-checked against Securepoint's official MIB modules (2025-05-27), **but an MIB is not proof that an OID exists on every device/firmware**. This template has not yet passed a live-device acceptance test. Do **not** replace your production template without testing.
 
+## New standalone candidate — v5.6 (no parent templates)
+
+**[Download Standalone v5.6 YAML](templates/securepoint-utm-standalone-v5.6.yaml)** · **[Migration and rollback procedure](docs/V5_6_STANDALONE.md)**.
+
+This completely self-contained template contains the Securepoint-specific metrics, the 4-page interface/security Dashboard, its own IF-MIB discovery and an SNMP no-data trigger. It does **not** link `Network Generic Device by SNMP`, so the inherited one-graph-per-interface Dashboard disappears from a host after old template linkage is cleared.
+
+**Switching is a clean replacement:** import v5.6 as a **new** template, Unlink and clear v5.5 (and a separately linked generic parent, if present) from the Firewall host, save, then link v5.6. Do not link v5.5 and v5.6 concurrently, because they share item keys. **Unlink and clear erases old history**; the user has accepted that. Avoid deleting the generic template globally.
+
+CI is structural only; live Zabbix import and firmware/licence OIDs still need verification.
+
 ## Latest development candidate — v5.5 (interfaces)
 
 **[Download v5.5 YAML](templates/securepoint-utm-unified-v5.5-interfaces.yaml)** · [Interface monitoring & dashboard removal notes](docs/V5_5_INTERFACES.md) · [Russian installation notes](docs/README_RU.md).
