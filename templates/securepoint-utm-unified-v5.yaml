@@ -7,13 +7,13 @@ zabbix_export:
       name: "Templates/Network devices"
   templates:
     -
-      uuid: "2b95f452af3848889e758df62ecd8365"
+      uuid: "c82ec6f190864809a865986d0fb50f35"
       template: "Securepoint UTM Unified v5 by SNMP"
       name: "Securepoint UTM Unified v5 by SNMP"
       description: "Experimental MIB-mapped Securepoint 14.x SNMPv3 template. Offline-validated only; verify on device. No hrDevice/hrStorage discovery, no swap division. Triggers opt-in. Manufacturer MIB files NOT included."
       vendor:
         name: "Community (unofficial)"
-        version: "8.0-4"
+        version: "8.0-5"
       groups:
         -
           name: "Templates/Network devices"
@@ -29,7 +29,7 @@ zabbix_export:
           value: "securepoint-utm"
       items:
         -
-          uuid: "750d821f59a14dea89f622b564551700"
+          uuid: "bf15a633189b45e7a19af79f49402193"
           name: "UTM: Product name"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.1.1.0]"
@@ -42,7 +42,7 @@ zabbix_export:
               tag: "component"
               value: "inventory"
         -
-          uuid: "e67fa39922b2466c854254cf761e35a2"
+          uuid: "27057dfeccd94dc6a4f1832e7543dd36"
           name: "UTM: Current firmware version"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.1.2.7.0]"
@@ -55,7 +55,7 @@ zabbix_export:
               tag: "component"
               value: "firmware"
         -
-          uuid: "ce9d543ae3534af38cce3500743dbef9"
+          uuid: "c39c016bfe3743fba01d20fb3af8e71b"
           name: "UTM: New firmware version reported"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.1.2.8.0]"
@@ -68,7 +68,7 @@ zabbix_export:
               tag: "component"
               value: "firmware"
         -
-          uuid: "0cff5a942dfb4a75873de08e913b45a7"
+          uuid: "2e41a8b5ce474c51a0f3238dc7ed4531"
           name: "UTM: License type"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.1.3.3.0]"
@@ -81,7 +81,7 @@ zabbix_export:
               tag: "component"
               value: "license"
         -
-          uuid: "d49361a02e68478781d31ee6b7f1e3cd"
+          uuid: "6e38c7a357c4499fa457eba3ca5a4f1f"
           name: "UTM: Licensed maximum users"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.1.3.4.0]"
@@ -92,7 +92,7 @@ zabbix_export:
               tag: "component"
               value: "license"
         -
-          uuid: "58e1ef5f20dd4eb2837587bd177dd518"
+          uuid: "827b24d37db5464ba8bebe2bba98a4a3"
           name: "UTM: License days remaining"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.1.3.5.0]"
@@ -105,17 +105,17 @@ zabbix_export:
               value: "license"
           triggers:
             -
-              uuid: "d3337f40b5fc4dc189d4c1ba513cfd5b"
+              uuid: "5c7dd0b931ac40cdadb84035060affb9"
               name: "UTM: license under 30 days"
               expression: "{$SP.LICENSE.ALERT}=1 and last(/Securepoint UTM Unified v5 by SNMP/sp.mib.license.days)<30 and last(/Securepoint UTM Unified v5 by SNMP/sp.mib.license.days)>=7"
               priority: "WARNING"
             -
-              uuid: "0d660ca6f668429187ef1954b9a33827"
+              uuid: "fc854d9ee0854b86a26cb0b2a532cdfa"
               name: "UTM: license under 7 days"
               expression: "{$SP.LICENSE.ALERT}=1 and last(/Securepoint UTM Unified v5 by SNMP/sp.mib.license.days)<7"
               priority: "HIGH"
         -
-          uuid: "d6a0a6c81b6c42b78bbd42fef487daa5"
+          uuid: "aaa9479dade84f35af6de8b93ad79709"
           name: "UTM: Conntrack maximum"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.2.1.10.1.0]"
@@ -126,7 +126,7 @@ zabbix_export:
               tag: "component"
               value: "conntrack"
         -
-          uuid: "97e936e71ca349f086416995b5a23b4e"
+          uuid: "c2add712eb574166a91287d63a2fe64a"
           name: "UTM: Conntrack current"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.2.1.10.2.0]"
@@ -138,12 +138,12 @@ zabbix_export:
               value: "conntrack"
           triggers:
             -
-              uuid: "67f3f766781f476d8e8dfd3035b18aaf"
+              uuid: "a88b2dc5723240bda5d6d3b94bdee581"
               name: "UTM: conntrack over 85%"
               expression: "{$SP.CONNTRACK.ALERT}=1 and last(/Securepoint UTM Unified v5 by SNMP/sp.mib.conntrack.maximum)>0 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.conntrack.current,10m)>0.85*last(/Securepoint UTM Unified v5 by SNMP/sp.mib.conntrack.maximum)"
               priority: "WARNING"
         -
-          uuid: "1217977f389e44be8d0c6ab5488995bc"
+          uuid: "46d5ae4bf8f04c4ba486b61776c76167"
           name: "OPTIONAL: HA cluster enabled"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.1.0]"
@@ -157,7 +157,7 @@ zabbix_export:
               tag: "component"
               value: "ha"
         -
-          uuid: "aade5492f5a24fb98e30d13c89856273"
+          uuid: "b1b4ad732600458ba1212c27b0916bb7"
           name: "OPTIONAL: HA priority"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.2.0]"
@@ -171,7 +171,7 @@ zabbix_export:
               tag: "component"
               value: "ha"
         -
-          uuid: "0efb357757df411689ed2a29ef6f6c08"
+          uuid: "47064fc71bde410fabf22b671e0d206f"
           name: "OPTIONAL: HA state"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.3.0]"
@@ -185,7 +185,7 @@ zabbix_export:
               tag: "component"
               value: "ha"
         -
-          uuid: "48c63589ef1d4d3a8f852ed79ef152e0"
+          uuid: "3d20bfea0e41408aae0c19aaef42e6fa"
           name: "OPTIONAL: HA sync state"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.4.0]"
@@ -199,7 +199,7 @@ zabbix_export:
               tag: "component"
               value: "ha"
         -
-          uuid: "8ded1d95e09043a088617feb556305ce"
+          uuid: "1f4063a50fda4221a1cb76ddc2352fa9"
           name: "OPTIONAL: HA maintenance"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.28553.2.1.12.5.0]"
@@ -213,7 +213,7 @@ zabbix_export:
               tag: "component"
               value: "ha"
         -
-          uuid: "4ed5cbf2bf0e497d80f1036c4df00477"
+          uuid: "f1d3a36754594b3faa47abebf0a996b3"
           name: "OPTIONAL: Linux load 1m"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.2021.10.1.3.1]"
@@ -226,7 +226,7 @@ zabbix_export:
               tag: "component"
               value: "cpu"
         -
-          uuid: "4ad5c5a6bb0e43318cf0fd2049effe2b"
+          uuid: "702825e1ff494c5da71b3041aa5d10bd"
           name: "OPTIONAL: Linux load 5m"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.2021.10.1.3.2]"
@@ -239,7 +239,7 @@ zabbix_export:
               tag: "component"
               value: "cpu"
         -
-          uuid: "e18fca450c144c588468451bf2d6b3e6"
+          uuid: "d662512d39dc4d31a2285ac5a34672b1"
           name: "OPTIONAL: Linux load 15m"
           type: "SNMP_AGENT"
           snmp_oid: "get[1.3.6.1.4.1.2021.10.1.3.3]"
@@ -532,7 +532,7 @@ zabbix_export:
         value: icmp
     discovery_rules:
         -
-          uuid: "aa797e5135f14d5c8edd43c323ba4f26"
+          uuid: "9c27ac7fff164d4fae21058baca58653"
           name: "Services discovery"
           type: "SNMP_AGENT"
           snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.1.1.1.2]"
@@ -540,7 +540,7 @@ zabbix_export:
           delay: "1h"
           item_prototypes:
             -
-              uuid: "b534d49d55294bf888ae2783e649f62e"
+              uuid: "82f5524fcfd34ce3a656b7a34a5f0e27"
               name: "Service {#LABEL}: status"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.1.1.1.3.{#SNMPINDEX}]"
@@ -557,12 +557,12 @@ zabbix_export:
                   value: "{#LABEL}"
               trigger_prototypes:
                 -
-                  uuid: "c68ea82a64cc488b886ff8bcfda73565"
+                  uuid: "5f8ee394cd4c4c0ca336022841b4e400"
                   name: "UTM: required service {#LABEL} is down"
                   expression: "{$SP.SERVICE.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.service.status[{#SNMPINDEX}],10m)=2"
                   priority: "WARNING"
             -
-              uuid: "7638c098a73c44ab8e04913e8c4f79c9"
+              uuid: "8ea38bfd0b9c4539ac5cd8a9107525ad"
               name: "Service {#LABEL}: flags (raw)"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.1.1.1.4.{#SNMPINDEX}]"
@@ -577,7 +577,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
         -
-          uuid: "46ef2744bfa946e187d5ebee31d8c1cb"
+          uuid: "7ebcdc80df4b47e0a4c6ab5819860ba8"
           name: "IPsec tunnels discovery"
           type: "SNMP_AGENT"
           snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.2.1.1.2]"
@@ -585,7 +585,7 @@ zabbix_export:
           delay: "1h"
           item_prototypes:
             -
-              uuid: "915017c6ed0746ef81f6ae94b88feda5"
+              uuid: "0d65b39626c8445ea3e911feb5f0b31e"
               name: "IPsec {#LABEL}: status"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.2.1.1.3.{#SNMPINDEX}]"
@@ -602,12 +602,12 @@ zabbix_export:
                   value: "{#LABEL}"
               trigger_prototypes:
                 -
-                  uuid: "591393b5b8f44b388a2668d7662dce7a"
+                  uuid: "8661a6f2808940aea8b351ba90253c2e"
                   name: "UTM: required IPsec {#LABEL} is down"
                   expression: "{$SP.IPSEC.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.ipsec.status[{#SNMPINDEX}],10m)=2"
                   priority: "WARNING"
             -
-              uuid: "c21180045c844da38adc0a6e5b8888c5"
+              uuid: "91da4762548c4e32a75db6c20a15aa12"
               name: "IPsec {#LABEL}: subnet count"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.2.1.1.4.{#SNMPINDEX}]"
@@ -621,7 +621,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
         -
-          uuid: "8a3b1da692af48838060dce8e3b2c1ed"
+          uuid: "1e554b3c703e404ca2c6e3002c462bb0"
           name: "OpenVPN profiles discovery"
           type: "SNMP_AGENT"
           snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.3.1.1.2]"
@@ -629,7 +629,7 @@ zabbix_export:
           delay: "1h"
           item_prototypes:
             -
-              uuid: "52f3c9c8c5fc43f18eeb36ceb6b3bfd7"
+              uuid: "ee20ec5d074d4d91a7ff6a6166047585"
               name: "OpenVPN {#LABEL}: status"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.3.1.1.3.{#SNMPINDEX}]"
@@ -645,7 +645,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
             -
-              uuid: "6bd07cf0a5554da38395045e19c84de9"
+              uuid: "859af3a4dd004f8ca5e81ae87950e108"
               name: "OpenVPN {#LABEL}: connected clients"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.3.1.1.4.{#SNMPINDEX}]"
@@ -660,7 +660,7 @@ zabbix_export:
                   value: "{#LABEL}"
           graph_prototypes:
             -
-              uuid: "323e92d301d34b10850664b1ae65fc56"
+              uuid: "907e492d024d48a1ad361a9d6e0486a9"
               name: "OpenVPN {#LABEL}: connected clients"
               graph_items:
                 -
@@ -670,7 +670,7 @@ zabbix_export:
                     host: "Securepoint UTM Unified v5 by SNMP"
                     key: "sp.mib.openvpn.clients[{#SNMPINDEX}]"
         -
-          uuid: "b9bca0554c6843de8038d5afb6569360"
+          uuid: "887c70547dcc47f8a7d726a4fc0ffe88"
           name: "Antivirus engines discovery"
           type: "SNMP_AGENT"
           snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.5.1.1.2]"
@@ -678,7 +678,7 @@ zabbix_export:
           delay: "1h"
           item_prototypes:
             -
-              uuid: "a9ca263cb33e4b8389ba0ca694e80f25"
+              uuid: "4c419f19cec744cdaf9ba4358fc1ad31"
               name: "Antivirus {#LABEL}: last pattern update"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.5.1.1.3.{#SNMPINDEX}]"
@@ -694,7 +694,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
             -
-              uuid: "33f0a62c18da49d182d30522864b2707"
+              uuid: "a22a248233834416a6d3977ed45b603a"
               name: "Antivirus {#LABEL}: updater run"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.5.1.1.4.{#SNMPINDEX}]"
@@ -710,7 +710,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
             -
-              uuid: "ab22c7f437224b01834dceb222741a77"
+              uuid: "758f457817674908a48c95bc9b1e52b4"
               name: "Antivirus {#LABEL}: update status"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.5.1.1.5.{#SNMPINDEX}]"
@@ -727,12 +727,12 @@ zabbix_export:
                   value: "{#LABEL}"
               trigger_prototypes:
                 -
-                  uuid: "9873b4efd10941ec8276f66934ffaebe"
+                  uuid: "b7a50c11cf8c4d89a682d0dd954001ad"
                   name: "UTM: antivirus {#LABEL} update failed"
                   expression: "{$SP.AV.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.av.state[{#SNMPINDEX}],10m)=2"
                   priority: "WARNING"
         -
-          uuid: "056a4c6dfc0f45748c22a3df32fec256"
+          uuid: "182fa287e02949f7abbbf05bb6c38a23"
           name: "WireGuard interfaces discovery"
           type: "SNMP_AGENT"
           snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.11.1.1.2]"
@@ -740,7 +740,7 @@ zabbix_export:
           delay: "1h"
           item_prototypes:
             -
-              uuid: "6a2c38ccc65a445b828209ee3cefb1bd"
+              uuid: "4b8f2486282e4e2aa6092f46543e7dea"
               name: "WireGuard {#LABEL}: tunnel name"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.1.1.3.{#SNMPINDEX}]"
@@ -756,7 +756,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
             -
-              uuid: "6a03c79f347e441882777fd50ce38876"
+              uuid: "31e20017d8584943a6bc76bbe33e1aff"
               name: "WireGuard {#LABEL}: status"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.1.1.4.{#SNMPINDEX}]"
@@ -773,12 +773,12 @@ zabbix_export:
                   value: "{#LABEL}"
               trigger_prototypes:
                 -
-                  uuid: "5d8355970a3a421881c20be5e0d5dd46"
+                  uuid: "efa491e2345c49a6aa4e98ba3500ad5e"
                   name: "UTM: required WireGuard interface {#LABEL} disconnected"
                   expression: "{$SP.WG.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.wg.interface.status[{#SNMPINDEX}],10m)=0"
                   priority: "WARNING"
             -
-              uuid: "7dc79982d0ad410d8c1273d84c84ba53"
+              uuid: "5e5b6479e7df4c89ab68ccd574cfd49d"
               name: "WireGuard {#LABEL}: UDP listen port"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.1.1.6.{#SNMPINDEX}]"
@@ -792,7 +792,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
             -
-              uuid: "44845869057e48ba8aaf69c35e4b7eb4"
+              uuid: "0f7e51cd2371498da30d7d2d68f30fad"
               name: "WireGuard {#LABEL}: peer count"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.1.1.7.{#SNMPINDEX}]"
@@ -806,7 +806,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
         -
-          uuid: "678adc4a044a493780a80bac46faac59"
+          uuid: "f4f9feb889e7432cad41e8d4d2861fe0"
           name: "WireGuard peers discovery"
           type: "SNMP_AGENT"
           snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.11.2.1.2]"
@@ -814,7 +814,7 @@ zabbix_export:
           delay: "30m"
           item_prototypes:
             -
-              uuid: "cdfa938c438b4fed89ea375ac26d2ec3"
+              uuid: "c2eaf1c8b02a4328aa27f3a01e537d60"
               name: "WireGuard peer {#LABEL}: status"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.2.1.3.{#SNMPINDEX}]"
@@ -831,12 +831,12 @@ zabbix_export:
                   value: "{#LABEL}"
               trigger_prototypes:
                 -
-                  uuid: "bc6d3a5c4bd04c2980791faa0f5a3dcf"
+                  uuid: "84ba5d82eee64562acc77fa28ee84ef2"
                   name: "UTM: required WireGuard peer {#LABEL} disconnected"
                   expression: "{$SP.WG.PEER.ALERT:\"{#LABEL}\"}=1 and min(/Securepoint UTM Unified v5 by SNMP/sp.mib.wg.peer.status[{#SNMPINDEX}],10m)=0"
                   priority: "WARNING"
             -
-              uuid: "27839d2952e14d268df7a4578a51e48c"
+              uuid: "356bf92280df4292acb8a376824c000e"
               name: "WireGuard peer {#LABEL}: last handshake (RAW)"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.2.1.6.{#SNMPINDEX}]"
@@ -851,7 +851,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
             -
-              uuid: "2429a6af8fee404e849d466114a2dee8"
+              uuid: "cda016d4f96a4108a897c0c85b33804c"
               name: "WireGuard peer {#LABEL}: sent bytes"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.2.1.7.{#SNMPINDEX}]"
@@ -866,7 +866,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
             -
-              uuid: "5fb2e6fa34eb4e538f7f7600f3b5b689"
+              uuid: "e8faf0c3cfda4c63a2f5d0a751e7876f"
               name: "WireGuard peer {#LABEL}: received bytes"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.11.2.1.8.{#SNMPINDEX}]"
@@ -881,7 +881,7 @@ zabbix_export:
                   tag: "name"
                   value: "{#LABEL}"
             -
-              uuid: "1368651f67d84bc682d030f957bbf850"
+              uuid: "c13c387943c746d5a3de8c89c5cfd3f5"
               name: "WireGuard peer {#LABEL}: sent B/s"
               type: "DEPENDENT"
               key: "sp.mib.wg.peer.bps.sent[{#SNMPINDEX}]"
@@ -897,7 +897,7 @@ zabbix_export:
                   tag: "component"
                   value: "wireguard"
             -
-              uuid: "e973232a2db14a6b8e6764388fa98e51"
+              uuid: "e100c2587d43430ca9817464f4e5b488"
               name: "WireGuard peer {#LABEL}: received B/s"
               type: "DEPENDENT"
               key: "sp.mib.wg.peer.bps.received[{#SNMPINDEX}]"
@@ -914,7 +914,7 @@ zabbix_export:
                   value: "wireguard"
           graph_prototypes:
             -
-              uuid: "69cd62b2295d405d8d4389a48af709e7"
+              uuid: "b7e1d0fd867542f5ab1e7b698c6915f1"
               name: "WireGuard {#LABEL}: B/s"
               graph_items:
                 -
@@ -930,7 +930,7 @@ zabbix_export:
                     host: "Securepoint UTM Unified v5 by SNMP"
                     key: "sp.mib.wg.peer.bps.received[{#SNMPINDEX}]"
         -
-          uuid: "0bf6cf0fd9624cd083a34465fb589e36"
+          uuid: "07c6afbf638f4cefa2be88a3b083cf0b"
           name: "OPTIONAL: IPsec subnets discovery"
           type: "SNMP_AGENT"
           snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.2.2.1.6]"
@@ -938,7 +938,7 @@ zabbix_export:
           delay: "1h"
           item_prototypes:
             -
-              uuid: "7790f3ed7ecc4ee68704fa3f5903e1d0"
+              uuid: "ffe2168573c849ada247d841f8b45cb9"
               name: "IPsec subnet {#SNMPINDEX}: status"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.2.2.1.6.{#SNMPINDEX}]"
@@ -956,7 +956,7 @@ zabbix_export:
           status: "DISABLED"
           description: "Nested table, disabled pending real SNMP verification."
         -
-          uuid: "269aa7bc32714967816637b669343f51"
+          uuid: "8233c3fe1ecb423eaee2e5f66431aece"
           name: "OPTIONAL: backup inventory"
           type: "SNMP_AGENT"
           snmp_oid: "discovery[{#LABEL},1.3.6.1.4.1.28553.2.1.6.1.1.2]"
@@ -964,7 +964,7 @@ zabbix_export:
           delay: "12h"
           item_prototypes:
             -
-              uuid: "7653076e15624dd985683c1445db92d7"
+              uuid: "78544af71b014de7af2758973dadb55f"
               name: "Backup {#LABEL}: date"
               type: "SNMP_AGENT"
               snmp_oid: "get[1.3.6.1.4.1.28553.2.1.6.1.1.3.{#SNMPINDEX}]"
@@ -1039,7 +1039,7 @@ zabbix_export:
           description: "Opt-in only after testing live OID and expected always-on behavior."
       valuemaps:
         -
-          uuid: "a04b8e5c1e5e4d89887811f603c18ae3"
+          uuid: "fa2f4f3a479c446aa06442924f4cd542"
           name: "Securepoint application (MIB)"
           mappings:
             -
@@ -1070,7 +1070,7 @@ zabbix_export:
               value: "9"
               newvalue: "No such service"
         -
-          uuid: "bf9080bc8971473188da78ba590aae9f"
+          uuid: "03de275f675344cfa7a22deb839b2ab3"
           name: "Securepoint IPsec (MIB)"
           mappings:
             -
@@ -1083,7 +1083,7 @@ zabbix_export:
               value: "2"
               newvalue: "Down"
         -
-          uuid: "0f1035929e2043c78097399888330805"
+          uuid: "ebe7d2a1345648bda902da35911066e1"
           name: "Securepoint OpenVPN (MIB)"
           mappings:
             -
@@ -1108,7 +1108,7 @@ zabbix_export:
               value: "7"
               newvalue: "Unknown / query error"
         -
-          uuid: "0d032018afee47f18ac3615ee5929fb7"
+          uuid: "a07ca3d2583c4ecaa9adc9baac42206a"
           name: "Securepoint WireGuard (MIB)"
           mappings:
             -
@@ -1124,7 +1124,7 @@ zabbix_export:
               value: "3"
               newvalue: "Deleted"
         -
-          uuid: "e77edcee443d42818d4656c8885569eb"
+          uuid: "b327e01111164e85a06765a996e98985"
           name: "Securepoint antivirus update (MIB)"
           mappings:
             -
@@ -1137,7 +1137,7 @@ zabbix_export:
               value: "3"
               newvalue: "In progress"
         -
-          uuid: "b1ee8935bd6245b48612e417989301ce"
+          uuid: "12fe80b704904d5bad5f62b754e9869b"
           name: "Securepoint cluster enabled (MIB)"
           mappings:
             -
@@ -1148,7 +1148,7 @@ zabbix_export:
               newvalue: "Enabled"
   graphs:
     -
-      uuid: "c9f21c8ba8db423688d940cd1308fc38"
+      uuid: "0be1552c063c413caa0be420ee663b90"
       name: "Securepoint conntrack current vs max"
       graph_items:
         -
@@ -1164,7 +1164,7 @@ zabbix_export:
             host: "Securepoint UTM Unified v5 by SNMP"
             key: "sp.mib.conntrack.maximum"
     -
-      uuid: "7b75fd10c26c49898c14ab7ea9b89e6f"
+      uuid: "9c6c338bd9f242f3a01a0f57ae680267"
       name: "Securepoint license days"
       graph_items:
         -
