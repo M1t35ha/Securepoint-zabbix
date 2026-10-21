@@ -1,0 +1,18 @@
+# Never commit credentials or live device captures
+.env
+.env.*
+!.env.example
+*.pcap
+*.pcapng
+*.snmpwalk
+*snmpdump*
+secrets/
+private/
+mibs/
+SECUREPOINT-UTM.mib
+SECUREPOINT-MIB.mib
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.DS_Store
