@@ -1,5 +1,14 @@
 # Securepoint → Zabbix: инструкция на русском
 
+## Последняя тестовая версия: v5.3 (более плотный Dashboard)
+
+[**Шаблон v5.3**](../templates/securepoint-utm-unified-v5.3-dashboard.yaml) · [что изменилось](V5_3_DASHBOARD.md)
+
+Теперь на Overview: крупные значения с мини-графиками CPU/RAM/TCP/процессов, индикаторы CPU/RAM, сводка сетевого трафика и таблицы **только состояний** сервисов и WireGuard (без raw state/flags). На Network — трафик IF-MIB и TCP/UDP/IP; на VPN & Security — состояния, клиенты и отдельные графики. Данные берём из уже существующих Items v5.2, без нового массового SNMP-обнаружения.
+
+**Import:** Update existing + Create new, **Delete missing отключён**. Реальный импорт должен подтвердить пользователь.
+
+
 ## Актуальная тестовая версия: v5.2 (Dashboard)
 
 [**YAML v5.2**](../templates/securepoint-utm-unified-v5.2-dashboard.yaml) · [Исправления и проверка SNMP](V5_2_DASHBOARD.md)
