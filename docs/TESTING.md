@@ -78,3 +78,18 @@ This checks OID coverage, **not** whether the returned status value means health
 - [ ] Confirm 15-minute no-data trigger and opt-in interface-link-down macros; no false alerts for intentional VPN disconnects.
 - [ ] Confirm interface metadata Items remain disabled unless manually verified.
 - [ ] Confirm legacy vendor firmware/license OIDs are still pending live validation.
+
+## RC1 live validation progress (2026-10-21)
+
+The second batch of user screenshots confirms that **all six interface states/link-speed values, interface RX/TX rates and graphs, error/discard rates and graphs, CPU/RAM/TCP/UDP, manufacturer firmware and license fields, and firmware-mismatch Zabbix Problem** are working on the initial Securepoint test host. See [RC1 release report](RELEASE_CANDIDATE_1.md) for precise evidence and exceptions.
+
+Remaining work, in recommended test order:
+
+1. Open Host → Latest data, filter `Not supported` in Host Items and record **counts** and anonymized item keys (never paste credentials or customer addresses).
+2. Use **one known-active WireGuard peer**: verify down→connected status, last handshake, and transfer counters against the Securepoint UI.
+3. Verify IPsec and OpenVPN LLD only if the device is configured with them; `0 clients` / an empty IPsec list may be legitimate.
+4. Review antivirus patterns and core service states against the Securepoint UI, especially services intentionally disabled.
+5. Check **firmware mismatch recovery** during a legitimate future firmware upgrade, not an artificial production outage.
+6. In a **disposable Zabbix test host or isolated lab**, exercise license warning 30d, critical 7d and zero-day semantics, 15m SNMP no-data and recovery, and opt-in link-down behavior; never change a production firewall/license to simulate an alert.
+7. Verify configured **Action/Media** sends alerts to an intended recipient; Zabbix Problems alone demonstrates trigger evaluation, not delivery.
+8. After 24h, inspect unsupported Items, LLD count stability, polling latency, and persistent nonzero LAN inbound discards. Record known-good baselines before setting drop thresholds.
