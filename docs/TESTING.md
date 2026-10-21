@@ -58,3 +58,12 @@ python tools/analyze_snmpwalk.py /tmp/securepoint-private.snmp --json
 For deployments using `authPriv`, adapt your flags. Be aware shell command lines and histories can expose credentials. Prefer an SNMP config file with restrictive permissions where possible. Script output contains only **counts** of rows and missing fields, not their values or indices; review before sharing anyway.
 
 This checks OID coverage, **not** whether the returned status value means healthy, whether the manufacturer implements it correctly, or whether Zabbix imported the template.
+
+## v5.5 interface acceptance (additions)
+
+- [ ] Verify full interface list in the new **Interfaces** page, including WAN/LAN/WG/VLAN when they actually exist; carousel 1/6 means six graphs were detected, not one interface.
+- [ ] Verify admin/oper status names from value maps and compare with Securepoint GUI.
+- [ ] Verify ifHighSpeed zero/unknown for virtual interfaces is not presented as a real physical link capacity.
+- [ ] Compare own 64-bit bps graph against generic SNMP parent traffic graph per interface.
+- [ ] Confirm in/out packet errors and discards are rates, not cumulative counters; no unsupported IF-MIB columns for configured interfaces.
+- [ ] Keep original `Network Generic Device by SNMP` linkage and its dashboard untouched unless deciding on a separate shared-template removal plan.
