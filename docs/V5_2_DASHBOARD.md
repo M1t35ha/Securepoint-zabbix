@@ -32,3 +32,7 @@
 - VPN & Security: WireGuard/IPsec/OpenVPN and antivirus statuses; tunnel/client graphs; firmware/license and optional conntrack.
 
 The template is not production-certified and no integration with a live Zabbix API has been performed. CI checks can confirm YAML structure only.
+
+## Interface LLD safety filter
+
+`sp.dashboard.interface.discovery` uses template macro `{$SP.DASHBOARD.IF.MATCHES}`, initially set to `^(LAN.*|WAN.*|A[0-9].*|eth[0-9].*|wg[0-9].*|tun[0-9].*|bond.*|br.*)$`. This deliberately avoids flooding unsupported loopback/pseudo-devices. The regex may be overridden at the host for differently named interfaces. After import, confirm discovered indices and their HC counter availability before widening the filter.
