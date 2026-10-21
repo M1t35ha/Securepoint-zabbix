@@ -9,6 +9,17 @@ Community-maintained, **experimental** monitoring template for Securepoint NextG
 > [!WARNING]
 > This is a test-stage project. The OID names, table definitions and enumerations were cross-checked against Securepoint's official MIB modules (2025-05-27), **but an MIB is not proof that an OID exists on every device/firmware**. This template has not yet passed a live-device acceptance test. Do **not** replace your production template without testing.
 
+## Unified v5 candidate (development branch)
+
+**Recommended next version:** [Unified v5 YAML](templates/securepoint-utm-unified-v5.yaml) — combines official Securepoint MIB status monitoring with curated standard SNMP TCP/UDP/IP/ICMP, process/RAM metrics and graphs. This is a **release candidate, not a validated production template**. The v4 file remains in the repository for comparison and rollback.
+
+- [Detailed scope and exclusions](docs/V5_DESIGN.md)
+- [Existing community research and component provenance](docs/COMMUNITY_RESEARCH.md)
+- [Acceptance test checklist](docs/TESTING.md)
+- [Safe installation / side-by-side testing](docs/INSTALL.md)
+
+**Do not import yet:** Offline CI checks structure but cannot demonstrate real UTM availability, correct access to every SNMP column, or the behavior of the Zabbix 8.0 importer.
+
 ## What it monitors
 
 | Area | Source | Status |
