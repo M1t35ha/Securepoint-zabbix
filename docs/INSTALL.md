@@ -1,5 +1,14 @@
 # Installation (test host first)
 
+## Unified v5 candidate (read before importing)
+
+v5 is at `templates/securepoint-utm-unified-v5.yaml`. It has its own template name/UUIDs and may be tested **alongside** the v4 reference. The old v2/v3 experiments with unsupported-items storms are not part of v5.
+
+**Until live-device acceptance tests pass, do not import v5 into the production host.** On the test day: export existing templates, create a separate test host, link v5 only (with its inherited generic template), and verify SNMPv3 read-only connectivity. Confirm that LLD creates only expected devices and that raw counter rates and firmware/HA/licence mappings are accurate. After validation, retire only the obsolete monitoring attachment; avoid `Delete missing` during initial import. Any `Unlink and clear` destroys data history and must be explicitly approved.
+
+See [design](V5_DESIGN.md) and [test checklist](TESTING.md).
+
+
 **Target:** Zabbix 8.0 / Securepoint NextGen UTM 14.x / read-only SNMPv3. This repository currently publishes a **test-stage** template.
 
 1. In Zabbix, make sure the official `Network Generic Device by SNMP` template is installed.
