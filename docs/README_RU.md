@@ -1,5 +1,16 @@
 # Securepoint → Zabbix: инструкция на русском
 
+## Актуальная тестовая версия — v5.5 (интерфейсы)
+
+**[Скачать v5.5 YAML](../templates/securepoint-utm-unified-v5.5-interfaces.yaml)** · [Подробная инструкция](V5_5_INTERFACES.md)
+
+В `Securepoint UTM | Command Center` добавлена вкладка **Interfaces**. Теперь одновременно показываются **все обнаруженные интерфейсы**: состояние (Up/Down), административный статус, скорость линка, RX/TX, ошибки и отброшенные пакеты. Графики трафика и ошибок доступны отдельно для каждого интерфейса. Добавлены 7 узких IF-MIB Item Prototypes, прежние показатели и триггеры лицензии/прошивки из v5.4 сохранены.
+
+Старый отдельный Dashboard **Network interfaces** наследуется от стандартного `Network Generic Device by SNMP`. **Просто импортом нашего YAML удалить его нельзя.** Не удаляй родительский шаблон или накопленные Items. Если захотим убрать только Dashboard, сначала посмотрим, кто ещё использует этот родительский шаблон: удаление Dashboard у родителя затронет все хосты. Безопасные варианты описаны в [V5_5_INTERFACES.md](V5_5_INTERFACES.md).
+
+Для импорта: `Data collection → Templates → Import`, Update existing и Create new включены, **Delete missing выключен**. Заново подключать Firewall не надо. Подожди два SNMP-опроса для показателей в секунду и проверь ошибки `Not supported` в Items.
+
+
 ## v5.4 — Прошивка и лицензия, новые уведомления
 
 **[Шаблон v5.4](../templates/securepoint-utm-unified-v5.4-firmware-license.yaml)** · [Описание и проверка](V5_4_FIRMWARE_LICENSE.md)
