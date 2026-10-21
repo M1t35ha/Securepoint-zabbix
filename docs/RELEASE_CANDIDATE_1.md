@@ -23,15 +23,33 @@ The RC branch was created from the previously CI-checked `feature/utm-v5-unified
 - [x] Interface link speed values populate (1 Gbps for LAN-like interfaces, 0 reported for virtual VPN).
 - [x] Host Dashboard `Interfaces` shows the new consolidated tables.
 
-## Must still be verified before v1.0.0 stable
+## Second live acceptance observation — 2026-10-21
 
-- [ ] After at least two polls, RX/TX bit-rate, errors/s and discards/s values populate and match device/network expectations.
-- [ ] Interface throughput and errors/discards graph prototypes show realistic history.
-- [ ] WireGuard peer state and handshake reflect real connectivity (interface Up is not peer Up).
-- [ ] Vendor MIB firmware (installed/available), license days and license type actually return values. Earlier dashboards displayed **No data** for some of these fields.
-- [ ] Firmware mismatch and 30/7-day license alerts correctly evaluate real values; clarify zero-day semantics.
-- [ ] SNMP no-data alert, opt-in link-down alarms, and service state mappings are tested without false positives.
-- [ ] Confirm performance / SNMP polling load with configured interface count.
+Additional user-provided Zabbix Dashboard and Problems screenshots **confirm** these test-device behaviors. Values are snapshots and must not be confused with long-term baselines:
+
+- [x] **RX/TX rates populate** after multiple samples across detected interfaces. Example observed: LAN1 received around 3.15 Mbps; another LAN transmit rate around 3.14 Mbps. Both nonzero rates and zero idle links are visible.
+- [x] **Interface throughput graph prototype** displays real RX/TX bit-rate history.
+- [x] **IF-MIB input/output errors and discards per second** populate. Error readings shown as 0 events/s; inbound discards on two LAN-like interfaces about 1 event/s, and a small nonzero outgoing discard rate on one WireGuard interface.
+- [x] **Errors/discards graph prototype** draws actual historical series (including a nonzero discard line).
+- [x] **Standard CPU/RAM and TCP/UDP metrics** produce values in the Overview and Network dashboards.
+- [x] **Manufacturer firmware SNMP fields respond:** installed `14.1.6`, manufacturer-reported new `14.1.9.5`.
+- [x] **License SNMP fields respond:** remaining days `90`, license type `Software v11`.
+- [x] **Firmware mismatch trigger is active:** Zabbix Problems shows `UTM: firmware update reported by manufacturer`. This validates the trigger for *different current/new version strings*, not semantic version ordering or notification delivery to email.
+- [x] **WireGuard peer-state Item reports a mapped value:** Disconnected (0) for an observed peer. **No connection/handshake recovery has been verified**.
+- [x] The four-page standalone dashboard renders: Overview, Network, Interfaces, VPN & Security.
+
+### Remaining test gates before v1.0.0 Stable
+
+- [ ] **WireGuard peer up/down transition**, last handshake and RX/TX counters: compare with UTM UI during a known active session (not merely wg interface Up).
+- [ ] **IPsec state / OpenVPN client count / antivirus / service LLD**: compare with GUI when features are configured; empty IPsec table is not an integration failure by itself. The screenshot's WireGuard Disconnected and OpenVPN zero clients might be normal.
+- [ ] **Firmware update trigger recovery:** check it clears when manufacturer-reported available version matches installed version, without changing a production firewall just for testing.
+- [ ] **License thresholds:** test 30-day WARNING, 7-day HIGH, handling of exactly zero days, recovery and notification routing in an isolated Zabbix test environment. Current license 90 days does *not* exercise those thresholds.
+- [ ] **No-SNMP-data (15m)** and opt-in physical interface-down trigger: validate conditions and recoveries without taking down the production firewall.
+- [ ] **Severity / notification delivery:** confirm Actions, Media types and recipients are configured, if external notifications are wanted. A visible Problem is not proof of a delivered notification.
+- [ ] **Sustained discarded packets** (approximately 1 per second observed on two LAN interfaces): establish a baseline and check for drops/congestion or SNMP counter semantics if persistent. Do not call it a hardware fault from one screenshot.
+- [ ] **Longer polling stability and load**: verify no significant unsupported items, unexpected LLD proliferation or undue SNMP load after a day.
+
+**Release status:** strong evidence for standalone SNMP system, IF-MIB monitoring and manufacturer firmware/license collection on this device; not yet evidence that every vendor feature or alarm is production-ready. No private hostname, management IP or identity is recorded.
 
 ## Project / branch policy
 
